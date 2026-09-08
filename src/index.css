@@ -1,0 +1,71 @@
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;0,9..144,700;1,9..144,300;1,9..144,400;1,9..144,600&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600&display=swap');
+@import 'tailwindcss';
+
+@theme {
+  --color-jogja-green: #1a4030;
+  --color-jogja-green-dark: #0f2a1f;
+  --color-jogja-green-mid: #2a5d47;
+  --color-jogja-gold: #c9963a;
+  --color-jogja-gold-light: #e0ac56;
+  --color-jogja-gold-pale: #f5e4c0;
+  --color-parchment: #f7f2ea;
+  --color-parchment-dark: #e8dfc9;
+  --color-espresso: #1c1208;
+  --color-espresso-mid: #3d2f1a;
+  --color-cream: #fffdf8;
+  --color-status-pending: #b45309;
+  --color-status-accepted: #166534;
+  --color-status-rejected: #9b1c1c;
+
+  --font-display: 'Fraunces', Georgia, serif;
+  --font-sans: 'Inter', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
+}
+
+* {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+*::-webkit-scrollbar {
+  display: none;
+}
+
+body {
+  font-family: var(--font-sans);
+  background-color: var(--color-parchment);
+  color: var(--color-espresso);
+  font-size: 1.04rem;
+  -webkit-font-smoothing: antialiased;
+}
+
+.font-display {
+  font-family: var(--font-display);
+}
+
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.batik-pattern {
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(201,150,58,0.07) 12px, rgba(201,150,58,0.07) 13px),
+    repeating-linear-gradient(-45deg, transparent, transparent 12px, rgba(201,150,58,0.07) 12px, rgba(201,150,58,0.07) 13px);
+}
+
+.batik-dark {
+  background-image:
+    repeating-linear-gradient(45deg, transparent, transparent 12px, rgba(201,150,58,0.1) 12px, rgba(201,150,58,0.1) 13px),
+    repeating-linear-gradient(-45deg, transparent, transparent 12px, rgba(201,150,58,0.1) 12px, rgba(201,150,58,0.1) 13px);
+}
+
+.timeline-line::before {
+  content: '';
+  position: absolute;
+  left: 10px;
+  top: 24px;
+  bottom: -24px;
+  width: 1px;
+  background: linear-gradient(to bottom, #c9963a, transparent);
+}

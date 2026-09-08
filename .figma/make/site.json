@@ -1,0 +1,10 @@
+{
+  "description": "This platform connects Yogyakarta with partner cities, allowing representatives to submit proposals, track status, and access cultural resources in a user-friendly interface.",
+  "robots": {
+    "index": false
+  },
+  "accessibility": {
+    "addBypassLinks": false,
+    "ignoreReducedMotion": false
+  }
+}
