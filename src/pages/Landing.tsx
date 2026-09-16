@@ -1,6 +1,6 @@
-import { useState } from 'react'
-import { foreignRelationsPersonnel, galleryPhotos } from '../data/mock'
-import type { ContentItem } from '../data/mock'
+import { useEffect, useState } from 'react'
+import { galleryPhotos } from '../data/mock'
+import type { ContentItem, HomepageMessages } from '../data/mock'
 import { partnerCities as initialPartnerCities } from '../data/mock'
 import type { Page } from '../App'
 
@@ -12,6 +12,8 @@ interface Props {
   navigate: (p: Page, cityId?: string) => void
   partnerCities: typeof initialPartnerCities
   contentItems: ContentItem[]
+  personnel: typeof import('../data/mock').foreignRelationsPersonnel
+  homepageMessages: HomepageMessages
 }
 
 type GalleryItem = {
@@ -38,7 +40,7 @@ function getEmbedUrl(url: string) {
 }
 
 function GalleryMedia({ item, lightbox = false }: { item: GalleryItem; lightbox?: boolean }) {
-  const mediaStyle = { width: '100%', height: lightbox ? 'auto' : '440px', objectFit: 'cover' as const, display: 'block' }
+  const mediaStyle = { width: '100%', height: lightbox ? 'auto' : 'clamp(320px, 45vw, 520px)', objectFit: 'cover' as const, display: 'block' }
   if (item.mediaType === 'video' && item.videoUrl) {
     const isDirectVideo = /\.(mp4|webm|ogg)(\?.*)?$/i.test(item.videoUrl)
     return isDirectVideo ? (
@@ -73,9 +75,10 @@ function SectionHeading({ children, light = false }: { children: React.ReactNode
   )
 }
 
-export default function LandingPage({ navigate, partnerCities, contentItems }: Props) {
+export default function LandingPage({ navigate, partnerCities, contentItems, personnel, homepageMessages }: Props) {
   const [galleryIndex, setGalleryIndex] = useState(0)
-  const [galleryTab, setGalleryTab] = useState<'photos' | 'video' | 'articles'>('photos')
+  const [galleryTab, setGalleryTab] = useState<'photos' | 'video'>('photos')
+  const [personnelCityId, setPersonnelCityId] = useState('yogyakarta')
   const [lightbox, setLightbox] = useState<number | null>(null)
   const [hoveredCity, setHoveredCity] = useState<string | null>(null)
   const activityGalleryItems: GalleryItem[] = galleryPhotos.map(photo => ({ ...photo, mediaType: 'photo' as const }))
@@ -92,13 +95,26 @@ export default function LandingPage({ navigate, partnerCities, contentItems }: P
       videoUrl: item.videoUrl,
     }
   })
-  const galleryCollections: Record<'photos' | 'video' | 'articles', GalleryItem[]> = {
+  const galleryCollections: Record<'photos' | 'video', GalleryItem[]> = {
     photos: [...activityGalleryItems, ...contentGalleryItems.filter((_, index) => publishedContent[index]?.type === 'photo')],
     video: [...activityGalleryItems.slice(0, 2), ...contentGalleryItems.filter((_, index) => publishedContent[index]?.type === 'video')],
-    articles: contentGalleryItems.filter((_, index) => publishedContent[index]?.type === 'article'),
   }
   const visibleGalleryItems = galleryCollections[galleryTab]
-  const currentVisibleGallery = visibleGalleryItems[galleryIndex % visibleGalleryItems.length] ?? activityGalleryItems[0]
+  const currentVisibleGallery = visibleGalleryItems.length > 0 ? visibleGalleryItems[galleryIndex % visibleGalleryItems.length] : null
+  const visiblePersonnel = personnel.filter(person => person.partnerCity === personnelCityId)
+  const personnelCities = [{ id: 'yogyakarta', name: 'Yogyakarta', country: 'Indonesia', flag: '🇮🇩' }, ...partnerCities]
+
+  useEffect(() => {
+    setGalleryIndex(0)
+  }, [galleryTab])
+
+  useEffect(() => {
+    if (visibleGalleryItems.length < 2) return
+    const interval = window.setInterval(() => {
+      setGalleryIndex(index => (index + 1) % visibleGalleryItems.length)
+    }, 5000)
+    return () => window.clearInterval(interval)
+  }, [galleryTab, visibleGalleryItems.length])
 
   return (
     <div>
@@ -165,15 +181,10 @@ export default function LandingPage({ navigate, partnerCities, contentItems }: P
 
       {/* ─── STATS RIBBON ─────────────────────────────────── */}
       <div style={{ backgroundColor: G }}>
-        <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '32px 24px', display: 'grid', gridTemplateColumns: 'repeat(4, 1fr)', gap: '24px' }}>
-          {[
-            { num: '8', label: 'Active Sister Cities', sub: 'across multiple regions' },
-            { num: '39+', label: 'Years of Partnership', sub: 'since 1985' },
-            { num: '200+', label: 'Joint Programs', sub: 'implemented' },
-            { num: 'Global', label: 'Cultural Exchange', sub: 'and cooperation' },
-          ].map(s => (
+        <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '32px 24px', display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '24px' }}>
+            {homepageMessages.stats.map(s => (
             <div key={s.label} style={{ textAlign: 'center', padding: '8px' }}>
-              <div style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: 'clamp(28px, 4vw, 40px)', color: GOLD, fontWeight: 600, lineHeight: 1 }}>{s.num}</div>
+              <div style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: 'clamp(28px, 4vw, 40px)', color: GOLD, fontWeight: 600, lineHeight: 1 }}>{s.num}{s.suffix}</div>
               <div style={{ color: 'white', fontSize: '13px', fontWeight: 500, marginTop: '4px' }}>{s.label}</div>
               <div style={{ color: 'rgba(255,255,255,0.45)', fontSize: '11px', marginTop: '2px' }}>{s.sub}</div>
             </div>
@@ -191,13 +202,13 @@ export default function LandingPage({ navigate, partnerCities, contentItems }: P
             <div style={{ height: '3px', width: '48px', backgroundColor: GOLD, marginTop: '16px', marginBottom: '28px' }} />
             <blockquote style={{ borderLeft: `3px solid ${GOLD}`, paddingLeft: '24px', marginBottom: '32px' }}>
               <p style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '18px', lineHeight: 1.75, color: '#3d2f1a', fontStyle: 'italic', marginBottom: '8px' }}>
-                "Yogyakarta is a city shaped by rich cultural heritage and a forward-looking spirit. Sister-city cooperation is more than diplomacy; it is a human bridge connecting communities, ideas, and hopes across borders."
+                "{homepageMessages.mayor.quote}"
               </p>
             </blockquote>
             <div style={{ display: 'flex', alignItems: 'center' }}>
               <div>
-                <div style={{ fontWeight: 600, color: G, fontSize: '15px' }}>Mayor of Yogyakarta</div>
-                <div style={{ color: 'rgba(28,18,8,0.55)', fontSize: '13px', marginTop: '2px' }}>2021–2026</div>
+                <div style={{ fontWeight: 600, color: G, fontSize: '15px' }}>{homepageMessages.mayor.name}</div>
+                <div style={{ color: 'rgba(28,18,8,0.55)', fontSize: '13px', marginTop: '2px' }}>{homepageMessages.mayor.period}</div>
               </div>
             </div>
           </div>
@@ -208,14 +219,10 @@ export default function LandingPage({ navigate, partnerCities, contentItems }: P
             <SectionHeading>From Our Sister Cities</SectionHeading>
             <div style={{ height: '3px', width: '48px', backgroundColor: GOLD, marginTop: '16px', marginBottom: '28px' }} />
             <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
-              {[
-                { city: 'Kyoto, Jepang', flag: '🇯🇵', quote: '"Yogyakarta and Kyoto share the soul of cities that refuse to let tradition disappear — our partnership is a mutual vow to keep culture alive for generations to come."', name: 'Mayor Koji Matsui', role: 'Walikota Kyoto' },
-                { city: 'Leiden, Belanda', flag: '🇳🇱', quote: '"The Javanese manuscripts in our university are not Dutch heritage — they are Yogyakarta\'s heritage that we are honored to return, page by page, to their rightful home."', name: 'Thierry Aartsen', role: 'Walikota Leiden' },
-                { city: 'Gwangju, Korsel', flag: '🇰🇷', quote: '"Yogyakarta and Gwangju are kindred cities — both chose culture and humanity over silence when history demanded courage. That bond is unbreakable."', name: 'Kim Kwang-chung', role: 'Walikota Gwangju' },
-              ].map(q => (
+              {homepageMessages.voices.map(q => (
                 <div key={q.city} style={{ backgroundColor: 'white', border: '1px solid #e8dfc9', padding: '20px', boxShadow: '0 1px 4px rgba(28,18,8,0.06)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
-                    <span style={{ fontSize: '20px' }}>{q.flag}</span>
+                    {q.photo ? <img src={q.photo} alt={`${q.name} profile`} style={{ width: '42px', height: '42px', objectFit: 'cover', objectPosition: q.photoPosition ?? '50% 50%', borderRadius: '50%', border: `2px solid ${GOLD}`, flexShrink: 0 }} /> : <span style={{ width: '42px', height: '42px', borderRadius: '50%', border: `2px solid ${GOLD}`, backgroundColor: PARCH, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>{q.flag}</span>}
                     <span style={{ fontFamily: 'JetBrains Mono, monospace', color: GOLD, fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{q.city}</span>
                   </div>
                   <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'rgba(28,18,8,0.7)', fontStyle: 'italic', marginBottom: '10px' }}>{q.quote}</p>
@@ -262,7 +269,7 @@ export default function LandingPage({ navigate, partnerCities, contentItems }: P
                 <img
                   src={city.thumbImage}
                   alt={city.name}
-                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s', transform: hoveredCity === city.id ? 'scale(1.08)' : 'scale(1)' }}
+                  style={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', objectPosition: city.coverPosition ?? 'center', transition: 'transform 0.5s', transform: hoveredCity === city.id ? 'scale(1.08)' : 'scale(1)' }}
                 />
                 <div style={{ position: 'absolute', inset: 0, background: `linear-gradient(to top, rgba(15,42,31,0.9) 0%, rgba(15,42,31,0.3) 50%, transparent 100%)` }} />
                 {/* Status badge */}
@@ -309,14 +316,26 @@ export default function LandingPage({ navigate, partnerCities, contentItems }: P
             </p>
           </div>
 
+          <div style={{ display: 'flex', gap: '8px', overflowX: 'auto', borderBottom: '1px solid #e8dfc9', marginBottom: '24px' }}>
+            {personnelCities.map(city => (
+              <button
+                key={city.id}
+                onClick={() => setPersonnelCityId(city.id)}
+                style={{ padding: '10px 16px', whiteSpace: 'nowrap', fontSize: '12px', fontWeight: 600, color: personnelCityId === city.id ? G : 'rgba(28,18,8,0.5)', backgroundColor: personnelCityId === city.id ? '#efe5cf' : 'transparent', border: 'none', borderBottom: personnelCityId === city.id ? `2px solid ${GOLD}` : '2px solid transparent', cursor: 'pointer' }}
+              >
+                {city.flag} {city.name}
+              </button>
+            ))}
+          </div>
+
           <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(220px, 1fr))', gap: '24px' }}>
-            {foreignRelationsPersonnel.map((p, i) => (
+            {visiblePersonnel.map((p, i) => (
               <div key={p.id} style={{ backgroundColor: 'white', border: '1px solid #e8dfc9', overflow: 'hidden', boxShadow: '0 1px 6px rgba(28,18,8,0.05)', transition: 'box-shadow 0.2s' }}
                 onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 4px 20px rgba(28,18,8,0.1)')}
                 onMouseLeave={e => (e.currentTarget.style.boxShadow = '0 1px 6px rgba(28,18,8,0.05)')}
               >
                 <div style={{ position: 'relative', minHeight: '32px', backgroundColor: '#e8dfc9' }}>
-                  {i === 0 && (
+                  {personnelCityId === 'yogyakarta' && i === 0 && (
                     <div style={{ position: 'absolute', top: '12px', left: '12px', backgroundColor: G, color: GOLD, padding: '3px 10px', fontSize: '9px', fontWeight: 600, letterSpacing: '0.1em' }}>
                       KEPALA BIDANG
                     </div>
@@ -346,53 +365,62 @@ export default function LandingPage({ navigate, partnerCities, contentItems }: P
               <SectionHeading light>Dokumentasi Kegiatan<br />Kota Mitra</SectionHeading>
             </div>
             {/* Tabs */}
-            <div style={{ display: 'flex', gap: '0', border: `1px solid rgba(255,255,255,0.2)` }}>
-              {(['photos', 'video', 'articles'] as const).map(tab => (
+            <div style={{ display: 'flex', gap: '2px', width: 'min(100%, 312px)', padding: '3px', border: `1px solid rgba(255,255,255,0.2)`, backgroundColor: 'rgba(0,0,0,0.12)' }}>
+              {(['photos', 'video'] as const).map(tab => (
                 <button
                   key={tab}
                   onClick={() => setGalleryTab(tab)}
                   style={{
-                    padding: '10px 24px', fontSize: '13px', fontWeight: 500, border: 'none', cursor: 'pointer', transition: 'all 0.2s',
+                    flex: '1 1 0', minWidth: 0, padding: '9px 10px', fontSize: '12px', fontWeight: 600, border: 'none', cursor: 'pointer', transition: 'all 0.2s',
                     backgroundColor: galleryTab === tab ? GOLD : 'transparent',
                     color: galleryTab === tab ? G : 'rgba(255,255,255,0.6)',
                   }}
                 >
-                  {tab === 'photos' ? '📷 Foto' : tab === 'video' ? '🎬 Video' : '📰 Artikel'}
+                  {tab === 'photos' ? '📷 Foto' : '🎬 Video'}
                 </button>
               ))}
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1.4fr 0.6fr', gap: '20px', alignItems: 'center' }}>
+          <div style={{ maxWidth: '1080px', margin: '0 auto' }}>
             <div style={{ position: 'relative', overflow: 'hidden', border: `1px solid rgba(255,255,255,0.15)`, background: 'rgba(255,255,255,0.02)' }}>
-              {currentVisibleGallery.mediaType === 'video' && currentVisibleGallery.videoUrl ? (
-                <GalleryMedia item={currentVisibleGallery} />
+              {currentVisibleGallery ? (
+                <>
+                  {currentVisibleGallery.mediaType === 'video' && currentVisibleGallery.videoUrl ? (
+                    <GalleryMedia item={currentVisibleGallery} />
+                  ) : (
+                    <button
+                      onClick={() => setLightbox(galleryIndex % visibleGalleryItems.length)}
+                      style={{ width: '100%', border: 'none', background: 'transparent', padding: 0, cursor: 'zoom-in' }}
+                    >
+                      <GalleryMedia item={currentVisibleGallery} />
+                    </button>
+                  )}
+                  <div style={{ position: 'absolute', inset: 'auto 0 0', padding: '20px 22px', background: 'linear-gradient(to top, rgba(15,42,31,0.85), rgba(15,42,31,0.08))' }}>
+                    <div style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '20px', color: 'white', marginBottom: '4px' }}>{currentVisibleGallery.caption}</div>
+                  </div>
+                  <button
+                    onClick={() => setGalleryIndex((galleryIndex - 1 + visibleGalleryItems.length) % visibleGalleryItems.length)}
+                    aria-label="Previous slide"
+                    style={{ position: 'absolute', left: '18px', top: '50%', transform: 'translateY(-50%)', width: '42px', height: '42px', borderRadius: '50%', backgroundColor: 'rgba(15,42,31,0.72)', color: 'white', border: '1px solid rgba(255,255,255,0.35)', fontSize: '22px', cursor: 'pointer', zIndex: 2 }}
+                  >
+                    ‹
+                  </button>
+                  <button
+                    onClick={() => setGalleryIndex((galleryIndex + 1) % visibleGalleryItems.length)}
+                    aria-label="Next slide"
+                    style={{ position: 'absolute', right: '18px', top: '50%', transform: 'translateY(-50%)', width: '42px', height: '42px', borderRadius: '50%', backgroundColor: GOLD, color: G, border: 'none', fontSize: '22px', cursor: 'pointer', fontWeight: 600, zIndex: 2 }}
+                  >
+                    ›
+                  </button>
+                </>
               ) : (
-                <button
-                  onClick={() => setLightbox(galleryIndex % visibleGalleryItems.length)}
-                  style={{ width: '100%', border: 'none', background: 'transparent', padding: 0, cursor: 'zoom-in' }}
-                >
-                  <GalleryMedia item={currentVisibleGallery} />
-                </button>
+                <div style={{ minHeight: '260px', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.6)', fontSize: '14px' }}>
+                  Belum ada dokumentasi {galleryTab === 'photos' ? 'foto' : 'video'}.
+                </div>
               )}
-              <div style={{ position: 'absolute', inset: 'auto 0 0', padding: '20px 22px', background: 'linear-gradient(to top, rgba(15,42,31,0.85), rgba(15,42,31,0.08))' }}>
-                <div style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '20px', color: 'white', marginBottom: '4px' }}>{currentVisibleGallery.caption}</div>
-              </div>
             </div>
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-              <button
-                onClick={() => setGalleryIndex((galleryIndex - 1 + visibleGalleryItems.length) % visibleGalleryItems.length || 0)}
-                style={{ backgroundColor: 'rgba(255,255,255,0.08)', color: 'white', border: '1px solid rgba(255,255,255,0.15)', padding: '12px 18px', fontSize: '14px', cursor: 'pointer' }}
-              >
-                ← Previous
-              </button>
-              <button
-                onClick={() => setGalleryIndex((galleryIndex + 1) % visibleGalleryItems.length || 0)}
-                style={{ backgroundColor: GOLD, color: G, border: 'none', padding: '12px 18px', fontSize: '14px', cursor: 'pointer', fontWeight: 600 }}
-              >
-                Next →
-              </button>
-              <div style={{ display: 'flex', gap: '8px', marginTop: '8px', flexWrap: 'wrap' }}>
+            {visibleGalleryItems.length > 0 && <div style={{ display: 'flex', justifyContent: 'center', gap: '8px', marginTop: '16px', flexWrap: 'wrap' }}>
                 {visibleGalleryItems.map((photo, index) => (
                   <button
                     key={photo.id}
@@ -404,8 +432,7 @@ export default function LandingPage({ navigate, partnerCities, contentItems }: P
                     aria-label={`View slide ${index + 1}`}
                   />
                 ))}
-              </div>
-            </div>
+            </div>}
           </div>
         </div>
       </section>

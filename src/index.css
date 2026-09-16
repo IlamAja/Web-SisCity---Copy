@@ -69,3 +69,40 @@ body {
   width: 1px;
   background: linear-gradient(to bottom, #c9963a, transparent);
 }
+
+.siskota-quill .ql-toolbar.ql-snow {
+  border-color: #e8dfc9;
+  background-color: #efe5cf;
+  font-family: var(--font-sans);
+}
+
+.siskota-quill .ql-container.ql-snow {
+  border-color: #e8dfc9;
+  font-family: var(--font-sans);
+  font-size: 14px;
+  min-height: 280px;
+}
+
+.siskota-quill .ql-editor {
+  min-height: 280px;
+  color: var(--color-espresso);
+  line-height: 1.7;
+}
+
+.siskota-quill .ql-editor.ql-blank::before {
+  color: rgba(28, 18, 8, 0.5);
+  font-style: normal;
+}
+
+.siskota-quill .ql-snow .ql-picker,
+.siskota-quill .ql-snow button {
+  color: var(--color-jogja-green);
+}
+
+.siskota-quill .ql-snow .ql-stroke {
+  stroke: var(--color-jogja-green);
+}
+
+.siskota-quill .ql-snow .ql-fill {
+  fill: var(--color-jogja-green);
+}

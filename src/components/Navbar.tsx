@@ -72,7 +72,7 @@ export default function Navbar({ page, auth, navigate, setAuth }: Props) {
                   {auth.role === 'admin' ? 'Admin' : auth.role === 'foreign-rep' ? 'Partner' : 'Editor'}
                 </span>
               </div>
-              {auth.role === 'admin' && (
+              {(auth.role === 'admin' || auth.permissions?.includes('Konfigurasi Sistem')) && (
                 <button onClick={() => navigate('admin')} className="text-xs px-3 py-1.5 rounded-sm font-medium transition-colors" style={{ backgroundColor: page === 'admin' ? '#c9963a' : 'rgba(201,150,58,0.2)', color: '#e0ac56' }}>
                   Admin Dashboard
                 </button>
@@ -102,7 +102,7 @@ export default function Navbar({ page, auth, navigate, setAuth }: Props) {
           <div className="px-6 py-4 flex flex-col gap-4">
             <button onClick={() => { navigate('landing'); setMenuOpen(false) }} className="text-sm text-white/80 text-left">Home</button>
             <button onClick={() => { navigate('partner-city', 'kyoto'); setMenuOpen(false) }} className="text-sm text-white/80 text-left">Partner Cities</button>
-            {auth?.role === 'admin' && (
+            {(auth?.role === 'admin' || auth?.permissions?.includes('Konfigurasi Sistem')) && (
               <button onClick={() => { navigate('admin'); setMenuOpen(false) }} className="text-sm text-left" style={{ color: '#e0ac56' }}>Admin Dashboard</button>
             )}
             {auth ? (
