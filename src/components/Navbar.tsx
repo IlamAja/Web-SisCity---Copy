@@ -76,7 +76,11 @@ export default function Navbar({ page, auth, navigate, setAuth, roles }: Props) 
                   {roles?.find(r => r.name === auth.role)?.label || (auth.role === 'admin' ? 'Admin' : auth.role === 'foreign-rep' ? 'Partner' : 'Editor')}
                 </span>
               </div>
+<<<<<<< HEAD
               {canAccessAdminDashboard(auth, roles) && (
+=======
+              {(auth.role === 'admin' || auth.permissions?.includes('Konfigurasi Sistem')) && (
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
                 <button onClick={() => navigate('admin')} className="text-xs px-3 py-1.5 rounded-sm font-medium transition-colors" style={{ backgroundColor: page === 'admin' ? '#c9963a' : 'rgba(201,150,58,0.2)', color: '#e0ac56' }}>
                   {auth.role === 'admin' ? 'Admin Dashboard' : 'Content Studio'}
                 </button>
@@ -106,10 +110,15 @@ export default function Navbar({ page, auth, navigate, setAuth, roles }: Props) 
           <div className="px-6 py-4 flex flex-col gap-4">
             <button onClick={() => { navigate('landing'); setMenuOpen(false) }} className="text-sm text-white/80 text-left">Home</button>
             <button onClick={() => { navigate('partner-city', 'kyoto'); setMenuOpen(false) }} className="text-sm text-white/80 text-left">Partner Cities</button>
+<<<<<<< HEAD
             {canAccessAdminDashboard(auth, roles) && (
               <button onClick={() => { navigate('admin'); setMenuOpen(false) }} className="text-sm text-left font-medium" style={{ color: '#e0ac56' }}>
                 {auth?.role === 'admin' ? 'Admin Dashboard' : 'Content Studio'}
               </button>
+=======
+            {(auth?.role === 'admin' || auth?.permissions?.includes('Konfigurasi Sistem')) && (
+              <button onClick={() => { navigate('admin'); setMenuOpen(false) }} className="text-sm text-left" style={{ color: '#e0ac56' }}>Admin Dashboard</button>
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
             )}
             {auth ? (
               <button onClick={handleLogout} className="text-sm text-white/40 text-left">Logout</button>

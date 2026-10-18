@@ -43,18 +43,25 @@ function storeValue<T>(key: string, value: T) {
 export default function App() {
   const [page, setPage] = useState<Page>('landing')
   const [selectedCity, setSelectedCity] = useState<string>('kyoto')
+<<<<<<< HEAD
   const [selectedArticleId, setSelectedArticleId] = useState<number | null>(null)
+=======
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   const [auth, setAuth] = useState<AuthUser>(() => getStored<AuthUser>('siskota.auth', null))
   const [partnerCities, setPartnerCities] = useState(() => getStored('siskota.partnerCities', initialPartnerCities))
   const [contentItems, setContentItems] = useState<ContentItem[]>(() => getStored('siskota.contentItems', initialContentItems))
   const [personnel, setPersonnel] = useState(() => getStored('siskota.personnel', initialPersonnel))
   const [proposals, setProposals] = useState(() => getStored('siskota.proposals', initialProposals))
   const [users, setUsers] = useState(() => getStored('siskota.users', initialUsers))
+<<<<<<< HEAD
   const [roles, setRoles] = useState(() => getStored('siskota.roles', initialRoles).map(role => (
     role.name === 'editor'
       ? { ...role, permissions: role.permissions.filter(permission => permission !== 'View basic reporting') }
       : role
   )))
+=======
+  const [roles, setRoles] = useState(() => getStored('siskota.roles', initialRoles))
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   const [pendingVoices, setPendingVoices] = useState<PendingHomepageVoice[]>(() => getStored('siskota.pendingVoices', []))
   const [homepageMessages, setHomepageMessages] = useState<HomepageMessages>(() => {
     const stored = getStored<Partial<HomepageMessages>>('siskota.homepageMessages', {})
@@ -70,6 +77,19 @@ export default function App() {
       })),
     }
   })
+<<<<<<< HEAD
+=======
+
+  useEffect(() => { storeValue('siskota.partnerCities', partnerCities) }, [partnerCities])
+  useEffect(() => { storeValue('siskota.contentItems', contentItems) }, [contentItems])
+  useEffect(() => { storeValue('siskota.personnel', personnel) }, [personnel])
+  useEffect(() => { storeValue('siskota.proposals', proposals) }, [proposals])
+  useEffect(() => { storeValue('siskota.users', users) }, [users])
+  useEffect(() => { storeValue('siskota.roles', roles) }, [roles])
+  useEffect(() => { storeValue('siskota.auth', auth) }, [auth])
+  useEffect(() => { storeValue('siskota.pendingVoices', pendingVoices) }, [pendingVoices])
+  useEffect(() => { storeValue('siskota.homepageMessages', homepageMessages) }, [homepageMessages])
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 
   useEffect(() => { storeValue('siskota.partnerCities', partnerCities) }, [partnerCities])
   useEffect(() => { storeValue('siskota.contentItems', contentItems) }, [contentItems])
@@ -108,9 +128,14 @@ export default function App() {
       <main>
         {page === 'landing' && <LandingPage navigate={navigate} partnerCities={partnerCities} contentItems={contentItems} personnel={personnel} homepageMessages={homepageMessages} />}
         {page === 'partner-city' && <PartnerCityPage cityId={selectedCity} navigate={navigate} partnerCities={partnerCities} contentItems={contentItems} />}
+<<<<<<< HEAD
         {page === 'article-detail' && selectedArticleId !== null && <ArticleDetailPage articleId={selectedArticleId} navigate={navigate} contentItems={contentItems} partnerCities={partnerCities} />}
         {page === 'portal' && <Portal auth={auth} setAuth={setAuth} navigate={navigate} proposals={proposals} setProposals={setProposals} partnerCities={partnerCities} users={users} setUsers={setUsers} roles={roles} pendingVoices={pendingVoices} setPendingVoices={setPendingVoices} contentItems={contentItems} setContentItems={setContentItems} />}
         {page === 'admin' && <AdminDashboard auth={auth} setAuth={setAuth} navigate={navigate} partnerCities={partnerCities} setPartnerCities={setPartnerCities} contentItems={contentItems} setContentItems={setContentItems} personnel={personnel} setPersonnel={setPersonnel} proposals={proposals} setProposals={setProposals} users={users} setUsers={setUsers} roles={roles} setRoles={setRoles} homepageMessages={homepageMessages} setHomepageMessages={setHomepageMessages} pendingVoices={pendingVoices} setPendingVoices={setPendingVoices} />}
+=======
+        {page === 'portal' && <Portal auth={auth} setAuth={setAuth} navigate={navigate} proposals={proposals} setProposals={setProposals} partnerCities={partnerCities} users={users} setUsers={setUsers} roles={roles} pendingVoices={pendingVoices} setPendingVoices={setPendingVoices} />}
+        {page === 'admin' && <AdminDashboard auth={auth} navigate={navigate} partnerCities={partnerCities} setPartnerCities={setPartnerCities} contentItems={contentItems} setContentItems={setContentItems} personnel={personnel} setPersonnel={setPersonnel} proposals={proposals} setProposals={setProposals} users={users} setUsers={setUsers} roles={roles} setRoles={setRoles} homepageMessages={homepageMessages} setHomepageMessages={setHomepageMessages} pendingVoices={pendingVoices} setPendingVoices={setPendingVoices} />}
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
       </main>
       {page !== 'admin' && <Footer navigate={navigate} />}
     </div>

@@ -222,6 +222,10 @@ export default function LandingPage({ navigate, partnerCities, contentItems, per
               {homepageMessages.voices.map(q => (
                 <div key={q.city} style={{ backgroundColor: 'white', border: '1px solid #e8dfc9', padding: '20px', boxShadow: '0 1px 4px rgba(28,18,8,0.06)' }}>
                   <div style={{ display: 'flex', alignItems: 'center', gap: '8px', marginBottom: '10px' }}>
+<<<<<<< HEAD
+=======
+                    {q.photo ? <img src={q.photo} alt={`${q.name} profile`} style={{ width: '42px', height: '42px', objectFit: 'cover', objectPosition: q.photoPosition ?? '50% 50%', borderRadius: '50%', border: `2px solid ${GOLD}`, flexShrink: 0 }} /> : <span style={{ width: '42px', height: '42px', borderRadius: '50%', border: `2px solid ${GOLD}`, backgroundColor: PARCH, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '20px', flexShrink: 0 }}>{q.flag}</span>}
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
                     <span style={{ fontFamily: 'JetBrains Mono, monospace', color: GOLD, fontSize: '11px', letterSpacing: '0.1em', textTransform: 'uppercase' }}>{q.city}</span>
                   </div>
                   <p style={{ fontSize: '13px', lineHeight: 1.65, color: 'rgba(28,18,8,0.7)', fontStyle: 'italic', marginBottom: '10px' }}>{q.quote}</p>

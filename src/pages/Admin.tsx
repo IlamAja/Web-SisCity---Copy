@@ -1,9 +1,16 @@
+<<<<<<< HEAD
 import { useEffect, useMemo, useRef, useState } from 'react'
+=======
+import { useEffect, useRef, useState } from 'react'
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 import { proposals, adminUsers, roles, foreignRelationsPersonnel, partnerCities } from '../data/mock'
 import type { ContentItem, HomepageMessages, PendingHomepageVoice } from '../data/mock'
 import type { Page, AuthUser } from '../App'
 import QuillRichTextEditor from '../components/QuillEditor'
+<<<<<<< HEAD
 import { canAccessContent, hasPermission } from '../utils/permissions'
+=======
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 
 const G = '#1a4030'
 const GOLD = '#c9963a'
@@ -26,6 +33,10 @@ const permissionOptions = [
   'Create and edit articles',
   'Upload and manage media files',
   'Add video embeds',
+<<<<<<< HEAD
+=======
+  'View basic reporting',
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   'Lihat Halaman Publik',
   'Lihat Galeri & Artikel',
 ]
@@ -175,7 +186,11 @@ function RichTextEditor({ value, onChange, placeholder }: { value: string; onCha
   )
 }
 
+<<<<<<< HEAD
 export default function AdminDashboard({ auth, setAuth, navigate, partnerCities, setPartnerCities, contentItems, setContentItems, personnel, setPersonnel, proposals, setProposals, users, setUsers, roles, setRoles, homepageMessages, setHomepageMessages, pendingVoices, setPendingVoices }: Props) {
+=======
+export default function AdminDashboard({ auth, navigate, partnerCities, setPartnerCities, contentItems, setContentItems, personnel, setPersonnel, proposals, setProposals, users, setUsers, roles, setRoles, homepageMessages, setHomepageMessages, pendingVoices, setPendingVoices }: Props) {
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   const [tab, setTab] = useState<AdminTab>('overview')
   const [proposalFilter, setProposalFilter] = useState<'all' | 'pending' | 'accepted' | 'rejected'>('all')
   const [selectedProposal, setSelectedProposal] = useState<string | null>(null)
@@ -213,6 +228,7 @@ export default function AdminDashboard({ auth, setAuth, navigate, partnerCities,
   const [isDraggingImage, setIsDraggingImage] = useState(false)
   const [dragStart, setDragStart] = useState({ pointerX: 0, pointerY: 0, x: 50, y: 50 })
   const [personnelForm, setPersonnelForm] = useState({ id: null as number | null, name: '', title: '', leadershipLabel: '', country: 'Indonesia', email: '', phone: '', bio: '', photo: '' })
+<<<<<<< HEAD
 
   useEffect(() => {
     setLocalRoles(roles)
@@ -289,6 +305,10 @@ export default function AdminDashboard({ auth, setAuth, navigate, partnerCities,
 
   const canAccessDashboard = auth?.role === 'admin' || accessibleTabs.length > 0
 
+=======
+  const canConfigure = auth?.role === 'admin' || auth?.permissions?.includes('Konfigurasi Sistem')
+
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   const readImageFile = (file: File, onRead: (dataUrl: string) => void) => {
     if (!file.type.startsWith('image/')) {
       setImageUploadError('File harus berupa gambar.')
@@ -342,7 +362,11 @@ export default function AdminDashboard({ auth, setAuth, navigate, partnerCities,
 
   const finishImageDrag = () => setIsDraggingImage(false)
 
+<<<<<<< HEAD
   if (!auth || !canAccessDashboard) {
+=======
+  if (!auth || !canConfigure) {
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: PARCH }}>
         <div style={{ textAlign: 'center', maxWidth: '440px', padding: '24px' }}>
@@ -390,7 +414,11 @@ export default function AdminDashboard({ auth, setAuth, navigate, partnerCities,
     if (!name || !email || !city) return
 
     if (userForm.id) {
+<<<<<<< HEAD
       setUsers(prev => prev.map(u => u.id === userForm.id ? { ...u, name, email, city, role: userForm.role as typeof u.role, status: userForm.status } : u))
+=======
+      setUsers(prev => prev.map(u => u.id === userForm.id ? { ...u, name, email, city, role: userForm.role, status: userForm.status } : u))
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
     } else {
       setUsers(prev => [
         ...prev,
@@ -716,6 +744,20 @@ export default function AdminDashboard({ auth, setAuth, navigate, partnerCities,
     setPendingVoices(prev => prev.map(item => item.id === voice.id ? { ...item, status: approved ? 'pending' : 'rejected', adminNote: approved ? 'Approved' : 'Rejected' } : item).filter(item => approved ? item.id !== voice.id : true))
     if (approved) setHomepageMessages(prev => ({ ...prev, voices: [...prev.voices, voice] }))
   }
+<<<<<<< HEAD
+=======
+
+  const TABS: { key: AdminTab; label: string; icon: string }[] = [
+    { key: 'overview', label: 'Overview', icon: '◈' },
+    { key: 'proposals', label: 'Proposal Review', icon: '◉' },
+    { key: 'users', label: 'User Management', icon: '◎' },
+    { key: 'roles', label: 'Roles & Access', icon: '◇' },
+    { key: 'content', label: 'Content Management', icon: '◻' },
+    { key: 'cities', label: 'Partner Cities', icon: '◎' },
+    { key: 'homepage', label: 'Homepage Messages', icon: '✦' },
+    { key: 'personnel', label: 'Partnership Team', icon: '▣' },
+  ]
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', fontFamily: 'Inter, system-ui, sans-serif' }}>

@@ -10,6 +10,7 @@ function getPlainText(html: string) {
   const element = document.createElement('div')
   element.innerHTML = html
   return element.textContent?.replace(/\s+/g, ' ').trim() ?? ''
+<<<<<<< HEAD
 }
 
 interface Props {
@@ -19,6 +20,17 @@ interface Props {
   contentItems: ContentItem[]
 }
 
+=======
+}
+
+interface Props {
+  cityId: string
+  navigate: (p: Page, cityId?: string) => void
+  partnerCities: PartnerCity[]
+  contentItems: ContentItem[]
+}
+
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 export default function PartnerCityPage({ cityId, navigate, partnerCities, contentItems }: Props) {
   const city = partnerCities.find(c => c.id === cityId) ?? partnerCities[0]
   const [activeTag, setActiveTag] = useState<string | null>(null)
@@ -33,11 +45,16 @@ export default function PartnerCityPage({ cityId, navigate, partnerCities, conte
       date: item.date,
       tags: item.tags,
       excerpt: getPlainText(item.content ?? '').slice(0, 180) || 'Baca berita dan dokumentasi terbaru dari kerja sama kota mitra.',
+<<<<<<< HEAD
       isContentItem: true as const,
     }))
   const fallbackArticles = cityArticles.length
     ? cityArticles
     : city.articles.map(a => ({ ...a, isContentItem: false as const }))
+=======
+    }))
+  const fallbackArticles = cityArticles.length ? cityArticles : city.articles
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   const filtered = activeTag ? fallbackArticles.filter(a => a.tags.includes(activeTag)) : fallbackArticles
   const allTags = Array.from(new Set(fallbackArticles.flatMap(a => a.tags)))
 
@@ -288,6 +305,7 @@ export default function PartnerCityPage({ cityId, navigate, partnerCities, conte
             ) : (
               <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '36px' }}>
                 {filtered.map(article => (
+<<<<<<< HEAD
                   <article key={article.id}
                     onClick={() => article.isContentItem ? navigate('article-detail', undefined, article.id) : undefined}
                     style={{
@@ -305,6 +323,11 @@ export default function PartnerCityPage({ cityId, navigate, partnerCities, conte
                       e.currentTarget.style.transform = 'translateY(0)'
                       e.currentTarget.style.boxShadow = 'none'
                     }}
+=======
+                  <article key={article.id} style={{ overflow: 'hidden', backgroundColor: 'white', border: '1px solid #e8dfc9', cursor: 'pointer', transition: 'transform 0.2s, box-shadow 0.2s' }}
+                    onMouseEnter={e => (e.currentTarget.style.transform = 'translateY(-4px)')}
+                    onMouseLeave={e => { e.currentTarget.style.transform = 'translateY(0)'; e.currentTarget.style.boxShadow = 'none' }}
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
                   >
                     <div style={{ position: 'relative', height: '188px', overflow: 'hidden', backgroundColor: '#2b2b2b' }}>
                       <img src={article.image} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }}
@@ -312,21 +335,28 @@ export default function PartnerCityPage({ cityId, navigate, partnerCities, conte
                         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
                       />
                       <span style={{ position: 'absolute', top: '18px', left: '12px', backgroundColor: G, color: GOLD, padding: '6px 12px', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase' }}>{article.tags[0] ?? 'Artikel'}</span>
+<<<<<<< HEAD
                       {article.isContentItem && (
                         <span style={{ position: 'absolute', bottom: '12px', right: '12px', backgroundColor: 'rgba(201,150,58,0.9)', color: '#1a4030', padding: '4px 10px', fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
                           Baca Selengkapnya →
                         </span>
                       )}
+=======
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
                     </div>
                     <div style={{ padding: '20px 24px 24px' }}>
                       <h3 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '19px', fontWeight: 500, color: G, lineHeight: 1.35, marginBottom: '12px' }}>{article.title}</h3>
                       <p style={{ fontSize: '14px', color: 'rgba(28,18,8,0.65)', lineHeight: 1.6, marginBottom: '16px' }}>{article.excerpt}</p>
+<<<<<<< HEAD
                       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                         <div style={{ fontSize: '11px', color: 'rgba(28,18,8,0.5)', fontFamily: 'JetBrains Mono, monospace' }}>{new Date(article.date).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
                         {article.isContentItem && (
                           <div style={{ fontSize: '12px', color: GOLD, fontWeight: 600 }}>Baca →</div>
                         )}
                       </div>
+=======
+                      <div style={{ fontSize: '11px', color: 'rgba(28,18,8,0.5)', fontFamily: 'JetBrains Mono, monospace' }}>{new Date(article.date).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
+>>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
                     </div>
                   </article>
                 ))}
