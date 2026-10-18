@@ -1,16 +1,9 @@
-<<<<<<< HEAD
 import { useEffect, useMemo, useRef, useState } from 'react'
-=======
-import { useEffect, useRef, useState } from 'react'
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 import { proposals, adminUsers, roles, foreignRelationsPersonnel, partnerCities } from '../data/mock'
 import type { ContentItem, HomepageMessages, PendingHomepageVoice } from '../data/mock'
 import type { Page, AuthUser } from '../App'
 import QuillRichTextEditor from '../components/QuillEditor'
-<<<<<<< HEAD
 import { canAccessContent, hasPermission } from '../utils/permissions'
-=======
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 
 const G = '#1a4030'
 const GOLD = '#c9963a'
@@ -33,10 +26,6 @@ const permissionOptions = [
   'Create and edit articles',
   'Upload and manage media files',
   'Add video embeds',
-<<<<<<< HEAD
-=======
-  'View basic reporting',
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   'Lihat Halaman Publik',
   'Lihat Galeri & Artikel',
 ]
@@ -186,11 +175,7 @@ function RichTextEditor({ value, onChange, placeholder }: { value: string; onCha
   )
 }
 
-<<<<<<< HEAD
 export default function AdminDashboard({ auth, setAuth, navigate, partnerCities, setPartnerCities, contentItems, setContentItems, personnel, setPersonnel, proposals, setProposals, users, setUsers, roles, setRoles, homepageMessages, setHomepageMessages, pendingVoices, setPendingVoices }: Props) {
-=======
-export default function AdminDashboard({ auth, navigate, partnerCities, setPartnerCities, contentItems, setContentItems, personnel, setPersonnel, proposals, setProposals, users, setUsers, roles, setRoles, homepageMessages, setHomepageMessages, pendingVoices, setPendingVoices }: Props) {
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   const [tab, setTab] = useState<AdminTab>('overview')
   const [proposalFilter, setProposalFilter] = useState<'all' | 'pending' | 'accepted' | 'rejected'>('all')
   const [selectedProposal, setSelectedProposal] = useState<string | null>(null)
@@ -198,10 +183,7 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
   const [verifyAction, setVerifyAction] = useState<'accept' | 'reject' | null>(null)
   const localProposals = proposals
   const localUsers = users
-  const [homepageVoiceForm, setHomepageVoiceForm] = useState({ id: null as number | null, city: '', flag: '🌏', quote: '', name: '', role: '', photo: '', photoPosition: '50% 50%' })
-  const [voiceDragPosition, setVoiceDragPosition] = useState({ x: 50, y: 50 })
-  const [isDraggingVoice, setIsDraggingVoice] = useState(false)
-  const [voiceDragStart, setVoiceDragStart] = useState({ pointerX: 0, pointerY: 0, x: 50, y: 50 })
+  const [homepageVoiceForm, setHomepageVoiceForm] = useState({ id: null as number | null, city: '', flag: '🌏', quote: '', name: '', role: '' })
   const [localRoles, setLocalRoles] = useState(roles)
   const localPersonnel = personnel
   const [personnelCountry, setPersonnelCountry] = useState('Indonesia')
@@ -228,8 +210,6 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
   const [isDraggingImage, setIsDraggingImage] = useState(false)
   const [dragStart, setDragStart] = useState({ pointerX: 0, pointerY: 0, x: 50, y: 50 })
   const [personnelForm, setPersonnelForm] = useState({ id: null as number | null, name: '', title: '', leadershipLabel: '', country: 'Indonesia', email: '', phone: '', bio: '', photo: '' })
-<<<<<<< HEAD
-
   useEffect(() => {
     setLocalRoles(roles)
   }, [roles])
@@ -305,10 +285,6 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
 
   const canAccessDashboard = auth?.role === 'admin' || accessibleTabs.length > 0
 
-=======
-  const canConfigure = auth?.role === 'admin' || auth?.permissions?.includes('Konfigurasi Sistem')
-
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   const readImageFile = (file: File, onRead: (dataUrl: string) => void) => {
     if (!file.type.startsWith('image/')) {
       setImageUploadError('File harus berupa gambar.')
@@ -362,11 +338,7 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
 
   const finishImageDrag = () => setIsDraggingImage(false)
 
-<<<<<<< HEAD
   if (!auth || !canAccessDashboard) {
-=======
-  if (!auth || !canConfigure) {
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
     return (
       <div style={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', backgroundColor: PARCH }}>
         <div style={{ textAlign: 'center', maxWidth: '440px', padding: '24px' }}>
@@ -414,11 +386,7 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
     if (!name || !email || !city) return
 
     if (userForm.id) {
-<<<<<<< HEAD
       setUsers(prev => prev.map(u => u.id === userForm.id ? { ...u, name, email, city, role: userForm.role as typeof u.role, status: userForm.status } : u))
-=======
-      setUsers(prev => prev.map(u => u.id === userForm.id ? { ...u, name, email, city, role: userForm.role, status: userForm.status } : u))
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
     } else {
       setUsers(prev => [
         ...prev,
@@ -709,31 +677,14 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
 
   const handleSaveHomepageVoice = () => {
     if (!homepageVoiceForm.city.trim() || !homepageVoiceForm.quote.trim() || !homepageVoiceForm.name.trim() || !homepageVoiceForm.role.trim()) return
-    const voice = { ...homepageVoiceForm, id: homepageVoiceForm.id ?? Date.now(), city: homepageVoiceForm.city.trim(), quote: homepageVoiceForm.quote.trim(), name: homepageVoiceForm.name.trim(), role: homepageVoiceForm.role.trim(), photoPosition: `${voiceDragPosition.x}% ${voiceDragPosition.y}%` }
+    const voice = { ...homepageVoiceForm, id: homepageVoiceForm.id ?? Date.now(), city: homepageVoiceForm.city.trim(), quote: homepageVoiceForm.quote.trim(), name: homepageVoiceForm.name.trim(), role: homepageVoiceForm.role.trim() }
     setHomepageMessages(prev => ({ ...prev, voices: homepageVoiceForm.id ? prev.voices.map(item => item.id === homepageVoiceForm.id ? voice : item) : [...prev.voices, voice] }))
-    setHomepageVoiceForm({ id: null, city: '', flag: '🌏', quote: '', name: '', role: '', photo: '', photoPosition: '50% 50%' })
+    setHomepageVoiceForm({ id: null, city: '', flag: '🌏', quote: '', name: '', role: '' })
   }
 
   const handleEditHomepageVoice = (voice: HomepageMessages['voices'][number]) => {
-    const [x = '50%', y = '50%'] = (voice.photoPosition ?? '50% 50%').split(' ')
-    setVoiceDragPosition({ x: Number.parseFloat(x) || 50, y: Number.parseFloat(y) || 50 })
-    setHomepageVoiceForm({ ...voice, photo: voice.photo ?? '', photoPosition: voice.photoPosition ?? '50% 50%' })
-  }
-
-  const startVoiceDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    event.currentTarget.setPointerCapture(event.pointerId)
-    setIsDraggingVoice(true)
-    setVoiceDragStart({ pointerX: event.clientX, pointerY: event.clientY, ...voiceDragPosition })
-  }
-
-  const moveVoiceDrag = (event: React.PointerEvent<HTMLDivElement>) => {
-    if (!isDraggingVoice) return
-    const nextPosition = {
-      x: Math.max(0, Math.min(100, voiceDragStart.x - (event.clientX - voiceDragStart.pointerX) / 2)),
-      y: Math.max(0, Math.min(100, voiceDragStart.y - (event.clientY - voiceDragStart.pointerY) / 2)),
-    }
-    setVoiceDragPosition(nextPosition)
-    setHomepageVoiceForm(form => ({ ...form, photoPosition: `${nextPosition.x}% ${nextPosition.y}%` }))
+    const { id, city, flag, quote, name, role } = voice
+    setHomepageVoiceForm({ id, city, flag, quote, name, role })
   }
 
   const handleDeleteHomepageVoice = (id: number) => {
@@ -744,20 +695,6 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
     setPendingVoices(prev => prev.map(item => item.id === voice.id ? { ...item, status: approved ? 'pending' : 'rejected', adminNote: approved ? 'Approved' : 'Rejected' } : item).filter(item => approved ? item.id !== voice.id : true))
     if (approved) setHomepageMessages(prev => ({ ...prev, voices: [...prev.voices, voice] }))
   }
-<<<<<<< HEAD
-=======
-
-  const TABS: { key: AdminTab; label: string; icon: string }[] = [
-    { key: 'overview', label: 'Overview', icon: '◈' },
-    { key: 'proposals', label: 'Proposal Review', icon: '◉' },
-    { key: 'users', label: 'User Management', icon: '◎' },
-    { key: 'roles', label: 'Roles & Access', icon: '◇' },
-    { key: 'content', label: 'Content Management', icon: '◻' },
-    { key: 'cities', label: 'Partner Cities', icon: '◎' },
-    { key: 'homepage', label: 'Homepage Messages', icon: '✦' },
-    { key: 'personnel', label: 'Partnership Team', icon: '▣' },
-  ]
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 
   return (
     <div style={{ minHeight: '100vh', display: 'flex', fontFamily: 'Inter, system-ui, sans-serif' }}>
@@ -1445,7 +1382,6 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
               {pendingVoices.length > 0 && <div style={{ backgroundColor: 'white', border: '1px solid #e8dfc9', padding: '24px', marginBottom: '24px' }}>
                 <h3 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '18px', color: G, marginBottom: '16px' }}>Partner Voice Validation</h3>
                 {pendingVoices.map(voice => <div key={voice.id} style={{ borderTop: '1px solid #e8dfc9', padding: '14px 0', display: 'flex', gap: '14px', alignItems: 'center' }}>
-                  {voice.photo ? <img src={voice.photo} alt="Voice profile" style={{ width: '48px', height: '48px', borderRadius: '50%', objectFit: 'cover' }} /> : <div style={{ width: '48px', height: '48px', borderRadius: '50%', backgroundColor: PARCH, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>{voice.flag}</div>}
                   <div style={{ flex: 1 }}><div style={{ fontWeight: 600, color: G }}>{voice.name} · {voice.role}</div><div style={{ fontSize: '12px', color: 'rgba(28,18,8,0.55)' }}>{voice.city}</div><div style={{ fontSize: '13px', fontStyle: 'italic', marginTop: '4px' }}>{voice.quote}</div></div>
                   <div style={{ display: 'flex', gap: '6px' }}><button onClick={() => handleValidateVoice(voice, true)} style={{ backgroundColor: '#166534', color: 'white', border: 'none', padding: '7px 12px', cursor: 'pointer' }}>Approve</button><button onClick={() => handleValidateVoice(voice, false)} style={{ backgroundColor: '#991b1b', color: 'white', border: 'none', padding: '7px 12px', cursor: 'pointer' }}>Reject</button></div>
                 </div>)}
@@ -1504,24 +1440,10 @@ export default function AdminDashboard({ auth, navigate, partnerCities, setPartn
                     <input value={homepageVoiceForm.name} onChange={e => setHomepageVoiceForm(form => ({ ...form, name: e.target.value }))} placeholder="Person name" style={{ padding: '10px 12px', border: '1px solid #e8dfc9', backgroundColor: PARCH, fontSize: '13px' }} />
                     <input value={homepageVoiceForm.role} onChange={e => setHomepageVoiceForm(form => ({ ...form, role: e.target.value }))} placeholder="Role / title" style={{ padding: '10px 12px', border: '1px solid #e8dfc9', backgroundColor: PARCH, fontSize: '13px' }} />
                   </div>
-                  <div>
-                    <label style={{ display: 'block', fontSize: '11px', fontWeight: 600, color: G, marginBottom: '6px', textTransform: 'uppercase', letterSpacing: '0.04em' }}>Profile Photo (max 5 MB)</label>
-                    <input type="file" accept="image/*" onChange={e => { const file = e.target.files?.[0]; if (file) readImageFile(file, dataUrl => setHomepageVoiceForm(form => ({ ...form, photo: dataUrl }))) }} style={{ width: '100%', padding: '9px 12px', border: '1px solid #e8dfc9', backgroundColor: PARCH, fontSize: '13px', boxSizing: 'border-box' }} />
-                    {homepageVoiceForm.photo && (
-                      <div
-                        onPointerDown={startVoiceDrag}
-                        onPointerMove={moveVoiceDrag}
-                        onPointerUp={() => setIsDraggingVoice(false)}
-                        onPointerCancel={() => setIsDraggingVoice(false)}
-                        style={{ width: '180px', aspectRatio: '1 / 1', marginTop: '10px', backgroundImage: `linear-gradient(rgba(255,255,255,0.25) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.25) 1px, transparent 1px), url(${homepageVoiceForm.photo})`, backgroundSize: '33.333% 33.333%, 33.333% 33.333%, cover', backgroundPosition: `center center, center center, ${voiceDragPosition.x}% ${voiceDragPosition.y}%`, backgroundRepeat: 'repeat, repeat, no-repeat', cursor: isDraggingVoice ? 'grabbing' : 'grab', border: `1px solid ${GOLD}`, touchAction: 'none' }}
-                      />
-                    )}
-                    {homepageVoiceForm.photo && <div style={{ fontSize: '11px', color: 'rgba(28,18,8,0.5)', marginTop: '5px' }}>Geser foto di dalam kotak 1:1 untuk mengatur crop profil.</div>}
-                  </div>
                   <textarea value={homepageVoiceForm.quote} onChange={e => setHomepageVoiceForm(form => ({ ...form, quote: e.target.value }))} rows={4} placeholder="Partner quote" style={{ width: '100%', padding: '10px 12px', border: '1px solid #e8dfc9', backgroundColor: PARCH, fontSize: '13px', boxSizing: 'border-box', resize: 'vertical' }} />
                   <div style={{ display: 'flex', gap: '8px' }}>
                     <button onClick={handleSaveHomepageVoice} style={{ backgroundColor: G, color: 'white', padding: '9px 18px', border: 'none', cursor: 'pointer', fontSize: '13px' }}>{homepageVoiceForm.id ? 'Update Voice' : 'Add Voice'}</button>
-                    {homepageVoiceForm.id && <button onClick={() => setHomepageVoiceForm({ id: null, city: '', flag: '🌏', quote: '', name: '', role: '', photo: '', photoPosition: '50% 50%' })} style={{ backgroundColor: 'transparent', color: G, padding: '9px 18px', border: `1px solid ${G}`, cursor: 'pointer', fontSize: '13px' }}>Cancel Edit</button>}
+                    {homepageVoiceForm.id && <button onClick={() => setHomepageVoiceForm({ id: null, city: '', flag: '🌏', quote: '', name: '', role: '' })} style={{ backgroundColor: 'transparent', color: G, padding: '9px 18px', border: `1px solid ${G}`, cursor: 'pointer', fontSize: '13px' }}>Cancel Edit</button>}
                   </div>
                 </div>
               </div>

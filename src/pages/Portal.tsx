@@ -1,10 +1,6 @@
 import { useState } from 'react'
 import { adminUsers as initialUsers, proposals as initialProposals, partnerCities as initialPartnerCities, roles as initialRoles } from '../data/mock'
-<<<<<<< HEAD
 import type { PendingHomepageVoice, ContentItem } from '../data/mock'
-=======
-import type { PendingHomepageVoice } from '../data/mock'
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 import type { Page, AuthUser } from '../App'
 import { canAccessContent, canAccessAdminDashboard } from '../utils/permissions'
 
@@ -15,11 +11,7 @@ const PARCH = '#f7f2ea'
 interface Props {
   auth: AuthUser
   setAuth: (u: AuthUser) => void
-<<<<<<< HEAD
   navigate: (p: Page, cityId?: string, articleId?: number) => void
-=======
-  navigate: (p: Page, cityId?: string) => void
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   proposals: typeof initialProposals
   setProposals: React.Dispatch<React.SetStateAction<typeof initialProposals>>
   partnerCities: typeof initialPartnerCities
@@ -28,17 +20,11 @@ interface Props {
   roles: typeof initialRoles
   pendingVoices: PendingHomepageVoice[]
   setPendingVoices: React.Dispatch<React.SetStateAction<PendingHomepageVoice[]>>
-<<<<<<< HEAD
   contentItems?: ContentItem[]
   setContentItems?: React.Dispatch<React.SetStateAction<ContentItem[]>>
 }
 
 type PortalTab = 'overview' | 'submit' | 'voice' | 'profile' | 'detail' | 'content'
-=======
-}
-
-type PortalTab = 'overview' | 'submit' | 'voice' | 'profile' | 'detail'
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
 
 function StatusBadge({ status }: { status: 'pending' | 'accepted' | 'rejected' }) {
   const config = {
@@ -55,11 +41,7 @@ function StatusBadge({ status }: { status: 'pending' | 'accepted' | 'rejected' }
   )
 }
 
-<<<<<<< HEAD
 export default function Portal({ auth, setAuth, navigate, proposals, setProposals, partnerCities, users, setUsers, roles, pendingVoices, setPendingVoices, contentItems, setContentItems }: Props) {
-=======
-export default function Portal({ auth, setAuth, navigate, proposals, setProposals, partnerCities, users, setUsers, roles, pendingVoices, setPendingVoices }: Props) {
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
   const [tab, setTab] = useState<PortalTab>('overview')
   const [selectedProposal, setSelectedProposal] = useState<string | null>(null)
   const [loginEmail, setLoginEmail] = useState('')
@@ -84,13 +66,9 @@ export default function Portal({ auth, setAuth, navigate, proposals, setProposal
   const handleLogin = () => {
     const user = users.find(u => u.email === loginEmail && u.status === 'active' && u.role !== 'viewer')
     if (user && user.role !== 'viewer') {
-<<<<<<< HEAD
       const userRole = roles.find(role => role.name === user.role)
       const userPerms = userRole?.permissions ?? []
       setAuth({ ...user, permissions: userPerms })
-=======
-      setAuth({ ...user, permissions: roles.find(role => role.name === user.role)?.permissions ?? [] })
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
       setLoginError('')
       if (user.role === 'admin') {
         navigate('admin')
@@ -300,19 +278,12 @@ export default function Portal({ auth, setAuth, navigate, proposals, setProposal
 
       {/* Tab nav */}
       <div style={{ backgroundColor: 'white', borderBottom: '1px solid #e8dfc9' }}>
-<<<<<<< HEAD
         <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '0 24px', display: 'flex', gap: '0', overflowX: 'auto' }}>
-=======
-        <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '0 24px', display: 'flex', gap: '0' }}>
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
             {[
             ...(canAccess('Track proposal status') ? [{ key: 'overview', label: 'My Proposals' }] : []),
             ...(canAccess('Submit collaboration proposals') ? [{ key: 'submit', label: '+ Submit Proposal' }] : []),
             ...(canAccess('Submit Partner Voice') ? [{ key: 'voice', label: 'Partner Voice' }] : []),
-<<<<<<< HEAD
             ...(canAccessContent(auth, roles) ? [{ key: 'content', label: 'Content Management' }] : []),
-=======
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
             ...(canAccess('Manage personal account details') ? [{ key: 'profile', label: 'My Profile' }] : []),
           ].map(t => (
             <button

@@ -106,7 +106,6 @@ body {
 .siskota-quill .ql-snow .ql-fill {
   fill: var(--color-jogja-green);
 }
-<<<<<<< HEAD
 
 /* ─── Article Body (Quill rendered HTML) ────────────────── */
 .article-body h1,
@@ -150,5 +149,3 @@ body {
 }
 .article-body pre { padding: 1em; overflow-x: auto; }
 .article-body code { padding: 2px 6px; }
-=======
->>>>>>> b05ce159409d9220f4915afa478d7dff8341532b
