@@ -1,34 +1,55 @@
 import { useState } from 'react'
 import type { Page } from '../App'
-import type { PartnerCity } from '../data/mock'
+import type { ContentItem, PartnerCity } from '../data/mock'
 
 const G = '#1a4030'
 const GOLD = '#c9963a'
 const PARCH = '#f7f2ea'
 
-interface Props {
-  cityId: string
-  navigate: (p: Page, cityId?: string) => void
-  partnerCities: PartnerCity[]
+function getPlainText(html: string) {
+  const element = document.createElement('div')
+  element.innerHTML = html
+  return element.textContent?.replace(/\s+/g, ' ').trim() ?? ''
 }
 
-export default function PartnerCityPage({ cityId, navigate, partnerCities }: Props) {
+interface Props {
+  cityId: string
+  navigate: (p: Page, cityId?: string, articleId?: number) => void
+  partnerCities: PartnerCity[]
+  contentItems: ContentItem[]
+}
+
+export default function PartnerCityPage({ cityId, navigate, partnerCities, contentItems }: Props) {
   const city = partnerCities.find(c => c.id === cityId) ?? partnerCities[0]
   const [activeTag, setActiveTag] = useState<string | null>(null)
   const [expandedMilestone, setExpandedMilestone] = useState<number | null>(null)
 
-  const filtered = activeTag ? city.articles.filter(a => a.tags.includes(activeTag)) : city.articles
-  const allTags = Array.from(new Set(city.articles.flatMap(a => a.tags)))
+  const cityArticles = contentItems
+    .filter(item => item.status === 'published' && item.type === 'article' && item.city === city.name)
+    .map(item => ({
+      id: item.id,
+      title: item.title,
+      image: item.thumbnail || city.thumbImage,
+      date: item.date,
+      tags: item.tags,
+      excerpt: getPlainText(item.content ?? '').slice(0, 180) || 'Baca berita dan dokumentasi terbaru dari kerja sama kota mitra.',
+      isContentItem: true as const,
+    }))
+  const fallbackArticles = cityArticles.length
+    ? cityArticles
+    : city.articles.map(a => ({ ...a, isContentItem: false as const }))
+  const filtered = activeTag ? fallbackArticles.filter(a => a.tags.includes(activeTag)) : fallbackArticles
+  const allTags = Array.from(new Set(fallbackArticles.flatMap(a => a.tags)))
 
   return (
     <div>
       {/* ─── CITY HERO ──────────────────────────────────── */}
       <section style={{
         position: 'relative',
-        height: '480px',
+        aspectRatio: '16 / 5',
         backgroundImage: `url(${city.coverImage})`,
         backgroundSize: 'cover',
-        backgroundPosition: 'center',
+        backgroundPosition: city.coverPosition ?? 'center',
         display: 'flex',
         alignItems: 'flex-end',
       }}>
@@ -216,17 +237,17 @@ export default function PartnerCityPage({ cityId, navigate, partnerCities }: Pro
       </section>
 
       {/* ─── ARTICLES ───────────────────────────────────── */}
-      {city.articles.length > 0 && (
-        <section style={{ padding: '96px 24px', backgroundColor: 'white' }}>
+      {fallbackArticles.length > 0 && (
+        <section style={{ padding: '72px 24px', backgroundColor: PARCH, color: G }}>
           <div style={{ maxWidth: '1152px', margin: '0 auto' }}>
             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '40px', flexWrap: 'wrap', gap: '24px' }}>
               <div>
                 <div style={{ display: 'flex', alignItems: 'center', gap: '12px', marginBottom: '8px' }}>
                   <div style={{ height: '1px', width: '32px', backgroundColor: GOLD }} />
-                  <span style={{ fontFamily: 'JetBrains Mono, monospace', color: GOLD, fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Artikel Terkait</span>
+                  <span style={{ fontFamily: 'JetBrains Mono, monospace', color: GOLD, fontSize: '11px', letterSpacing: '0.15em', textTransform: 'uppercase' }}>Artikel Partner City</span>
                 </div>
                 <h2 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '28px', color: G, fontWeight: 500 }}>
-                  Berita &amp; Dokumentasi
+                  Berita Terkini
                 </h2>
               </div>
 
@@ -265,31 +286,47 @@ export default function PartnerCityPage({ cityId, navigate, partnerCities }: Pro
                 Tidak ada artikel untuk tag ini.
               </div>
             ) : (
-              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(340px, 1fr))', gap: '24px' }}>
+              <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(280px, 1fr))', gap: '36px' }}>
                 {filtered.map(article => (
-                  <article key={article.id} style={{ border: '1px solid #e8dfc9', overflow: 'hidden', backgroundColor: PARCH, cursor: 'pointer', transition: 'box-shadow 0.2s' }}
-                    onMouseEnter={e => (e.currentTarget.style.boxShadow = '0 8px 32px rgba(28,18,8,0.1)')}
-                    onMouseLeave={e => (e.currentTarget.style.boxShadow = 'none')}
+                  <article key={article.id}
+                    onClick={() => article.isContentItem ? navigate('article-detail', undefined, article.id) : undefined}
+                    style={{
+                      overflow: 'hidden', backgroundColor: 'white', border: '1px solid #e8dfc9',
+                      cursor: article.isContentItem ? 'pointer' : 'default',
+                      transition: 'transform 0.2s, box-shadow 0.2s',
+                    }}
+                    onMouseEnter={e => {
+                      if (article.isContentItem) {
+                        e.currentTarget.style.transform = 'translateY(-4px)'
+                        e.currentTarget.style.boxShadow = '0 8px 24px rgba(28,18,8,0.12)'
+                      }
+                    }}
+                    onMouseLeave={e => {
+                      e.currentTarget.style.transform = 'translateY(0)'
+                      e.currentTarget.style.boxShadow = 'none'
+                    }}
                   >
-                    <div style={{ height: '200px', overflow: 'hidden', backgroundColor: '#e8dfc9' }}>
+                    <div style={{ position: 'relative', height: '188px', overflow: 'hidden', backgroundColor: '#2b2b2b' }}>
                       <img src={article.image} alt={article.title} style={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.4s' }}
                         onMouseEnter={e => (e.currentTarget.style.transform = 'scale(1.05)')}
                         onMouseLeave={e => (e.currentTarget.style.transform = 'scale(1)')}
                       />
-                    </div>
-                    <div style={{ padding: '20px' }}>
-                      <div style={{ display: 'flex', gap: '6px', marginBottom: '10px', flexWrap: 'wrap' }}>
-                        {article.tags.map(tag => (
-                          <span key={tag} style={{ fontSize: '10px', padding: '2px 8px', backgroundColor: 'rgba(201,150,58,0.15)', color: GOLD, border: '1px solid rgba(201,150,58,0.3)' }}>
-                            {tag}
-                          </span>
-                        ))}
-                        <span style={{ marginLeft: 'auto', fontSize: '10px', color: 'rgba(28,18,8,0.4)', fontFamily: 'JetBrains Mono, monospace' }}>
-                          {new Date(article.date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })}
+                      <span style={{ position: 'absolute', top: '18px', left: '12px', backgroundColor: G, color: GOLD, padding: '6px 12px', fontSize: '12px', fontWeight: 600, textTransform: 'uppercase' }}>{article.tags[0] ?? 'Artikel'}</span>
+                      {article.isContentItem && (
+                        <span style={{ position: 'absolute', bottom: '12px', right: '12px', backgroundColor: 'rgba(201,150,58,0.9)', color: '#1a4030', padding: '4px 10px', fontSize: '11px', fontWeight: 600, display: 'flex', alignItems: 'center', gap: '4px' }}>
+                          Baca Selengkapnya →
                         </span>
+                      )}
+                    </div>
+                    <div style={{ padding: '20px 24px 24px' }}>
+                      <h3 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '19px', fontWeight: 500, color: G, lineHeight: 1.35, marginBottom: '12px' }}>{article.title}</h3>
+                      <p style={{ fontSize: '14px', color: 'rgba(28,18,8,0.65)', lineHeight: 1.6, marginBottom: '16px' }}>{article.excerpt}</p>
+                      <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <div style={{ fontSize: '11px', color: 'rgba(28,18,8,0.5)', fontFamily: 'JetBrains Mono, monospace' }}>{new Date(article.date).toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })}</div>
+                        {article.isContentItem && (
+                          <div style={{ fontSize: '12px', color: GOLD, fontWeight: 600 }}>Baca →</div>
+                        )}
                       </div>
-                      <h3 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '17px', fontWeight: 500, color: G, lineHeight: 1.4, marginBottom: '8px' }}>{article.title}</h3>
-                      <p style={{ fontSize: '13px', color: 'rgba(28,18,8,0.6)', lineHeight: 1.65 }}>{article.excerpt}</p>
                     </div>
                   </article>
                 ))}

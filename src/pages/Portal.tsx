@@ -1,6 +1,8 @@
 import { useState } from 'react'
-import { proposals, partnerCities } from '../data/mock'
+import { adminUsers as initialUsers, proposals as initialProposals, partnerCities as initialPartnerCities, roles as initialRoles } from '../data/mock'
+import type { PendingHomepageVoice, ContentItem } from '../data/mock'
 import type { Page, AuthUser } from '../App'
+import { canAccessContent, canAccessAdminDashboard } from '../utils/permissions'
 
 const G = '#1a4030'
 const GOLD = '#c9963a'
@@ -9,17 +11,20 @@ const PARCH = '#f7f2ea'
 interface Props {
   auth: AuthUser
   setAuth: (u: AuthUser) => void
-  navigate: (p: Page, cityId?: string) => void
+  navigate: (p: Page, cityId?: string, articleId?: number) => void
+  proposals: typeof initialProposals
+  setProposals: React.Dispatch<React.SetStateAction<typeof initialProposals>>
+  partnerCities: typeof initialPartnerCities
+  users: typeof initialUsers
+  setUsers: React.Dispatch<React.SetStateAction<typeof initialUsers>>
+  roles: typeof initialRoles
+  pendingVoices: PendingHomepageVoice[]
+  setPendingVoices: React.Dispatch<React.SetStateAction<PendingHomepageVoice[]>>
+  contentItems?: ContentItem[]
+  setContentItems?: React.Dispatch<React.SetStateAction<ContentItem[]>>
 }
 
-type PortalTab = 'overview' | 'submit' | 'detail'
-
-const DEMO_USERS = [
-  { id: 2, name: 'Tanaka Hiroshi', email: 'tanaka.h@city.kyoto.jp', role: 'foreign-rep' as const, city: 'Kyoto' },
-  { id: 3, name: 'Emma Thompson', email: 'e.thompson@wcc.govt.nz', role: 'foreign-rep' as const, city: 'Wellington' },
-  { id: 4, name: 'Kim Jae-won', email: 'kjw@gwangju.go.kr', role: 'foreign-rep' as const, city: 'Gwangju' },
-  { id: 1, name: 'Drs. Bambang Wijayanto', email: 'bambang.w@jogjakota.go.id', role: 'admin' as const, city: 'Yogyakarta' },
-]
+type PortalTab = 'overview' | 'submit' | 'voice' | 'profile' | 'detail' | 'content'
 
 function StatusBadge({ status }: { status: 'pending' | 'accepted' | 'rejected' }) {
   const config = {
@@ -36,7 +41,7 @@ function StatusBadge({ status }: { status: 'pending' | 'accepted' | 'rejected' }
   )
 }
 
-export default function Portal({ auth, setAuth, navigate }: Props) {
+export default function Portal({ auth, setAuth, navigate, proposals, setProposals, partnerCities, users, setUsers, roles, pendingVoices, setPendingVoices, contentItems, setContentItems }: Props) {
   const [tab, setTab] = useState<PortalTab>('overview')
   const [selectedProposal, setSelectedProposal] = useState<string | null>(null)
   const [loginEmail, setLoginEmail] = useState('')
@@ -46,16 +51,46 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
   const [form, setForm] = useState({
     title: '', category: '', description: '', objectives: '', budget: '', duration: '', attachments: '',
   })
+  const [otherCategory, setOtherCategory] = useState('')
+  const [registerForm, setRegisterForm] = useState({ name: '', email: '', city: '', photo: '' })
+  const [voiceForm, setVoiceForm] = useState({ city: '', flag: '🌏', quote: '', name: '', role: '', photo: '' })
+  const [voiceSubmitted, setVoiceSubmitted] = useState(false)
+
+  const readProfilePhoto = (file: File | undefined, onRead: (value: string) => void) => {
+    if (!file || !file.type.startsWith('image/') || file.size > 5 * 1024 * 1024) return
+    const reader = new FileReader()
+    reader.onload = () => onRead(String(reader.result))
+    reader.readAsDataURL(file)
+  }
 
   const handleLogin = () => {
-    const user = DEMO_USERS.find(u => u.email === loginEmail)
-    if (user) {
-      setAuth(user)
+    const user = users.find(u => u.email === loginEmail && u.status === 'active' && u.role !== 'viewer')
+    if (user && user.role !== 'viewer') {
+      const userRole = roles.find(role => role.name === user.role)
+      const userPerms = userRole?.permissions ?? []
+      setAuth({ ...user, permissions: userPerms })
       setLoginError('')
-      if (user.role === 'admin') navigate('admin')
+      if (user.role === 'admin') {
+        navigate('admin')
+      }
     } else {
-      setLoginError('Email tidak ditemukan. Gunakan salah satu: tanaka.h@city.kyoto.jp, e.thompson@wcc.govt.nz, kjw@gwangju.go.kr, atau bambang.w@jogjakota.go.id')
+      setLoginError('Email tidak ditemukan. Gunakan salah satu akun demo di bawah.')
     }
+  }
+
+  const canAccess = (permission: string) => auth?.role === 'admin' || Boolean(auth?.permissions?.includes(permission))
+
+  const handleRegister = () => {
+    if (!registerForm.name || !registerForm.email || !registerForm.city) return
+    const user = { id: Date.now(), ...registerForm, role: 'foreign-rep' as const, status: 'active' as const, lastLogin: 'Just now' }
+    setUsers(prev => [...prev, user])
+    setAuth(user)
+  }
+
+  const handleSubmitVoice = () => {
+    if (!auth || !voiceForm.city || !voiceForm.quote || !voiceForm.name || !voiceForm.role) return
+    setPendingVoices(prev => [...prev, { ...voiceForm, id: Date.now(), submittedBy: auth.id, status: 'pending' }])
+    setVoiceSubmitted(true)
   }
 
   const myProposals = auth ? proposals.filter(p => p.city === auth.city) : []
@@ -114,12 +149,12 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
                 {/* Demo accounts */}
                 <div style={{ marginTop: '24px', padding: '16px', backgroundColor: PARCH, border: '1px solid #e8dfc9' }}>
                   <div style={{ fontFamily: 'JetBrains Mono, monospace', fontSize: '10px', color: GOLD, letterSpacing: '0.1em', textTransform: 'uppercase', marginBottom: '10px' }}>Demo Accounts</div>
-                  {DEMO_USERS.map(u => (
+                  {users.filter(u => u.role !== 'viewer').map(u => (
                     <button key={u.id} onClick={() => setLoginEmail(u.email)}
                       style={{ display: 'block', width: '100%', textAlign: 'left', padding: '6px 0', backgroundColor: 'transparent', border: 'none', cursor: 'pointer', fontSize: '12px', color: 'rgba(28,18,8,0.6)', borderBottom: '1px solid #e8dfc9' }}
                     >
-                      <span style={{ color: u.role === 'admin' ? GOLD : G, fontWeight: 600 }}>
-                        {u.role === 'admin' ? '[Admin] ' : '[Rep] '}
+                      <span style={{ color: u.role === 'admin' ? GOLD : u.role === 'editor' ? '#2980b9' : G, fontWeight: 600 }}>
+                        {`[${roles.find(r => r.name === u.role)?.label || (u.role === 'admin' ? 'Admin' : u.role === 'foreign-rep' ? 'Rep' : 'Editor')}] `}
                       </span>
                       {u.email} — {u.city}
                     </button>
@@ -128,18 +163,14 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
               </div>
             ) : (
               <div>
-                <p style={{ fontSize: '13px', color: 'rgba(28,18,8,0.6)', lineHeight: 1.7, marginBottom: '20px' }}>
-                  Account registration for partner institutions must be approved by the Yogyakarta City International Affairs team. Please contact us:
-                </p>
-                <div style={{ backgroundColor: PARCH, border: '1px solid #e8dfc9', padding: '16px', fontSize: '13px', color: 'rgba(28,18,8,0.7)' }}>
-                  <div style={{ fontWeight: 600, marginBottom: '4px' }}>International Affairs Division</div>
-                  <div>humas@jogjakota.go.id</div>
-                  <div>+62 274 515 100 ext. 201</div>
-                  <div style={{ marginTop: '8px', fontSize: '11px', color: 'rgba(28,18,8,0.45)' }}>Office hours: Monday–Friday, 08:00–16:00 WIB</div>
+                <div style={{ display: 'grid', gap: '12px' }}>
+                  <input value={registerForm.name} onChange={e => setRegisterForm(f => ({ ...f, name: e.target.value }))} placeholder="Full name" style={{ padding: '10px 14px', border: '1px solid #e8dfc9', backgroundColor: PARCH, fontSize: '14px' }} />
+                  <input type="email" value={registerForm.email} onChange={e => setRegisterForm(f => ({ ...f, email: e.target.value }))} placeholder="Email address" style={{ padding: '10px 14px', border: '1px solid #e8dfc9', backgroundColor: PARCH, fontSize: '14px' }} />
+                  <input value={registerForm.city} onChange={e => setRegisterForm(f => ({ ...f, city: e.target.value }))} placeholder="City / institution" style={{ padding: '10px 14px', border: '1px solid #e8dfc9', backgroundColor: PARCH, fontSize: '14px' }} />
+                  <label style={{ fontSize: '12px', color: G }}>Profile photo (optional, max 5 MB)</label>
+                  <input type="file" accept="image/*" onChange={e => readProfilePhoto(e.target.files?.[0], photo => setRegisterForm(f => ({ ...f, photo })))} style={{ padding: '8px', border: '1px solid #e8dfc9', backgroundColor: PARCH }} />
+                  <button onClick={handleRegister} style={{ backgroundColor: G, color: 'white', padding: '12px', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Create Account</button>
                 </div>
-                <button onClick={() => setLoginMode('login')} style={{ width: '100%', backgroundColor: 'transparent', color: G, padding: '12px', fontSize: '14px', fontWeight: 500, border: `1px solid ${G}`, cursor: 'pointer', marginTop: '16px' }}>
-                  ← Back to Login
-                </button>
               </div>
             )}
           </div>
@@ -236,9 +267,9 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
             </div>
           </div>
           <div style={{ display: 'flex', gap: '8px' }}>
-            {auth.role === 'admin' && (
+            {canAccessAdminDashboard(auth, roles) && (
               <button onClick={() => navigate('admin')} style={{ padding: '9px 18px', fontSize: '13px', backgroundColor: GOLD, color: G, fontWeight: 600, border: 'none', cursor: 'pointer' }}>
-                Admin Dashboard →
+                {auth.role === 'admin' ? 'Admin Dashboard →' : 'Content Studio →'}
               </button>
             )}
           </div>
@@ -247,10 +278,13 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
 
       {/* Tab nav */}
       <div style={{ backgroundColor: 'white', borderBottom: '1px solid #e8dfc9' }}>
-        <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '0 24px', display: 'flex', gap: '0' }}>
-          {[
-            { key: 'overview', label: 'My Proposals' },
-            { key: 'submit', label: auth.role === 'foreign-rep' ? '+ Submit Proposal' : 'Information' },
+        <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '0 24px', display: 'flex', gap: '0', overflowX: 'auto' }}>
+            {[
+            ...(canAccess('Track proposal status') ? [{ key: 'overview', label: 'My Proposals' }] : []),
+            ...(canAccess('Submit collaboration proposals') ? [{ key: 'submit', label: '+ Submit Proposal' }] : []),
+            ...(canAccess('Submit Partner Voice') ? [{ key: 'voice', label: 'Partner Voice' }] : []),
+            ...(canAccessContent(auth, roles) ? [{ key: 'content', label: 'Content Management' }] : []),
+            ...(canAccess('Manage personal account details') ? [{ key: 'profile', label: 'My Profile' }] : []),
           ].map(t => (
             <button
               key={t.key}
@@ -260,6 +294,7 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
                 backgroundColor: 'transparent',
                 color: tab === t.key ? G : 'rgba(28,18,8,0.5)',
                 borderBottom: `2px solid ${tab === t.key ? G : 'transparent'}`,
+                whiteSpace: 'nowrap',
               }}
             >
               {t.label}
@@ -269,7 +304,34 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
       </div>
 
       <div style={{ maxWidth: '1152px', margin: '0 auto', padding: '48px 24px' }}>
-        {tab === 'overview' && (
+        {tab === 'profile' && canAccess('Manage personal account details') && (
+          <div style={{ maxWidth: '560px', backgroundColor: 'white', border: '1px solid #e8dfc9', padding: '28px' }}>
+            <h2 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '24px', color: G, marginBottom: '20px' }}>My Profile</h2>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '16px', marginBottom: '20px' }}>
+              {auth.photo ? <img src={auth.photo} alt="Profile" style={{ width: '72px', height: '72px', borderRadius: '50%', objectFit: 'cover' }} /> : <div style={{ width: '72px', height: '72px', borderRadius: '50%', backgroundColor: GOLD, display: 'flex', alignItems: 'center', justifyContent: 'center', color: G, fontSize: '24px' }}>{auth.name[0]}</div>}
+              <div><div style={{ fontWeight: 600, color: G }}>{auth.name}</div><div style={{ fontSize: '13px', color: 'rgba(28,18,8,0.55)' }}>{auth.email}</div></div>
+            </div>
+            <input type="file" accept="image/*" onChange={e => readProfilePhoto(e.target.files?.[0], photo => { setUsers(prev => prev.map(user => user.id === auth.id ? { ...user, photo } : user)); setAuth({ ...auth, photo }) })} style={{ width: '100%', padding: '9px', border: '1px solid #e8dfc9', backgroundColor: PARCH }} />
+            <div style={{ fontSize: '11px', color: 'rgba(28,18,8,0.5)', marginTop: '8px' }}>Foto profil maksimal 5 MB.</div>
+          </div>
+        )}
+
+        {tab === 'voice' && canAccess('Submit Partner Voice') && (
+          <div style={{ maxWidth: '720px' }}>
+            <h2 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '26px', color: G, marginBottom: '8px' }}>Submit Partner Voice</h2>
+            {voiceSubmitted ? <div style={{ backgroundColor: '#fef3c7', padding: '20px', color: '#92400e' }}>Partner Voice terkirim dan menunggu validasi admin.</div> : <div style={{ backgroundColor: 'white', border: '1px solid #e8dfc9', padding: '28px', display: 'grid', gap: '12px' }}>
+              <input value={voiceForm.city} onChange={e => setVoiceForm(f => ({ ...f, city: e.target.value }))} placeholder="City and country" style={{ padding: '10px', border: '1px solid #e8dfc9', backgroundColor: PARCH }} />
+              <input value={voiceForm.flag} onChange={e => setVoiceForm(f => ({ ...f, flag: e.target.value }))} placeholder="Flag" style={{ padding: '10px', border: '1px solid #e8dfc9', backgroundColor: PARCH }} />
+              <input value={voiceForm.name} onChange={e => setVoiceForm(f => ({ ...f, name: e.target.value }))} placeholder="Your public name" style={{ padding: '10px', border: '1px solid #e8dfc9', backgroundColor: PARCH }} />
+              <input value={voiceForm.role} onChange={e => setVoiceForm(f => ({ ...f, role: e.target.value }))} placeholder="Public role / title" style={{ padding: '10px', border: '1px solid #e8dfc9', backgroundColor: PARCH }} />
+              <textarea value={voiceForm.quote} onChange={e => setVoiceForm(f => ({ ...f, quote: e.target.value }))} rows={5} placeholder="Write your quote" style={{ padding: '10px', border: '1px solid #e8dfc9', backgroundColor: PARCH, resize: 'vertical' }} />
+              <input type="file" accept="image/*" onChange={e => readProfilePhoto(e.target.files?.[0], photo => setVoiceForm(f => ({ ...f, photo })))} />
+              <button onClick={handleSubmitVoice} style={{ backgroundColor: G, color: 'white', padding: '11px', border: 'none', cursor: 'pointer', fontWeight: 600 }}>Send for Admin Validation</button>
+            </div>}
+          </div>
+        )}
+
+        {tab === 'overview' && canAccess('Track proposal status') && (
           <div>
             {/* Summary cards */}
             <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: '16px', marginBottom: '40px' }}>
@@ -323,7 +385,7 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
           </div>
         )}
 
-        {tab === 'submit' && auth.role === 'foreign-rep' && !submitted && (
+        {tab === 'submit' && canAccess('Submit collaboration proposals') && !submitted && (
           <div style={{ maxWidth: '720px' }}>
             <h2 style={{ fontFamily: 'Fraunces, Georgia, serif', fontSize: '26px', color: G, fontWeight: 500, marginBottom: '8px' }}>Submit a Collaboration Proposal</h2>
             <p style={{ fontSize: '14px', color: 'rgba(28,18,8,0.6)', marginBottom: '36px', lineHeight: 1.7 }}>
@@ -346,7 +408,6 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
                   { key: 'category', label: 'Category', placeholder: '', type: 'select', options: ['Culture & Heritage', 'Education & Research', 'Creative Industry', 'Urban Development', 'Tourism', 'Economy & Trade', 'Environmental Sustainability', 'Health', 'Other'] },
                   { key: 'description', label: 'Proposal Description', placeholder: 'Describe the background, purpose, and overview of the program you are proposing...', type: 'textarea' },
                   { key: 'objectives', label: 'Objectives & Target Outputs', placeholder: 'Specify the program goals and expected outputs...', type: 'textarea' },
-                  { key: 'budget', label: 'Estimated Budget', placeholder: 'Example: USD 50,000 (50% Japan Foundation Grant, 50% local budget)', type: 'input' },
                   { key: 'duration', label: 'Program Duration', placeholder: '', type: 'duration-select', options: ['1–3 months', '4–6 months', '7–12 months', '13–18 months', '19–24 months', 'More than 24 months'] },
                 ].map(field => (
                   <div key={field.key}>
@@ -381,12 +442,46 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
                   </div>
                 ))}
 
+                {form.category === 'Other' && (
+                  <div>
+                    <label style={{ display: 'block', fontSize: '12px', fontWeight: 600, color: G, marginBottom: '6px', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Specify Category</label>
+                    <input
+                      value={otherCategory}
+                      onChange={e => setOtherCategory(e.target.value)}
+                      placeholder="Write the proposal category"
+                      style={{ width: '100%', padding: '10px 14px', border: '1px solid #e8dfc9', fontSize: '14px', outline: 'none', backgroundColor: PARCH, boxSizing: 'border-box' }}
+                    />
+                  </div>
+                )}
+
                 <div style={{ borderTop: '1px solid #e8dfc9', paddingTop: '20px', display: 'flex', gap: '12px', justifyContent: 'flex-end' }}>
                   <button onClick={() => setTab('overview')} style={{ padding: '11px 24px', fontSize: '14px', backgroundColor: 'transparent', color: G, border: `1px solid ${G}`, cursor: 'pointer', fontWeight: 500 }}>
                     Cancel
                   </button>
                   <button
-                    onClick={() => { if (form.title && form.category && form.description) setSubmitted(true) }}
+                    onClick={() => {
+                      if (!form.title || !form.category || !form.description || (form.category === 'Other' && !otherCategory.trim()) || !auth) return
+                      setProposals(prev => [...prev, {
+                        id: `PROP-${new Date().getFullYear()}-${String(Date.now()).slice(-3)}`,
+                        cityId: partnerCities.find(city => city.name === auth.city)?.id ?? auth.city.toLowerCase().replace(/\s+/g, '-'),
+                        city: auth.city,
+                        country: 'International Partner',
+                        flag: partnerCities.find(city => city.name === auth.city)?.flag ?? '🌏',
+                        submittedBy: auth.name,
+                        submittedAt: new Date().toISOString().split('T')[0],
+                        title: form.title,
+                        category: form.category === 'Other' ? otherCategory.trim() : form.category,
+                        status: 'pending' as const,
+                        description: form.description,
+                        objectives: form.objectives,
+                        budget: form.budget,
+                        duration: form.duration,
+                        adminNote: null,
+                        reviewedBy: null,
+                        reviewedAt: null,
+                      }])
+                      setSubmitted(true)
+                    }}
                     style={{ padding: '11px 28px', fontSize: '14px', backgroundColor: G, color: 'white', border: 'none', cursor: 'pointer', fontWeight: 600 }}
                   >
                     Send Proposal →
@@ -408,7 +503,7 @@ export default function Portal({ auth, setAuth, navigate }: Props) {
               <div style={{ fontWeight: 600, marginBottom: '4px' }}>Temporary Reference Number</div>
               <div style={{ fontFamily: 'JetBrains Mono, monospace' }}>PROP-2024-{String(Math.floor(Math.random() * 900) + 100).padStart(3, '0')}</div>
             </div>
-            <button onClick={() => { setSubmitted(false); setTab('overview'); setForm({ title: '', category: '', description: '', objectives: '', budget: '', duration: '', attachments: '' }) }}
+            <button onClick={() => { setSubmitted(false); setTab('overview'); setForm({ title: '', category: '', description: '', objectives: '', budget: '', duration: '', attachments: '' }); setOtherCategory('') }}
               style={{ backgroundColor: G, color: 'white', padding: '12px 28px', fontSize: '14px', fontWeight: 600, border: 'none', cursor: 'pointer' }}>
               Back to Dashboard
             </button>

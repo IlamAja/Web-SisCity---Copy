@@ -23,6 +23,7 @@ export type PartnerCity = {
   contactOrg: string
   coverImage: string
   thumbImage: string
+  coverPosition?: string
   accentColor: string
   tags: string[]
   milestones: { year: number; title: string; desc: string }[]
@@ -232,6 +233,7 @@ export const foreignRelationsPersonnel = [
     leadershipLabel: 'Head of Division',
     title: 'Head of Foreign Relations Division',
     country: 'Indonesia',
+    partnerCity: 'yogyakarta',
     photo: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?w=300&h=300&fit=crop&auto=format&face=center',
     email: 'bambang.w@jogjakota.go.id',
     phone: '+62 274 515 100 ext. 201',
@@ -244,6 +246,7 @@ export const foreignRelationsPersonnel = [
     leadershipLabel: '',
     title: 'Head of International Cooperation Sub-Division',
     country: 'Indonesia',
+    partnerCity: 'yogyakarta',
     photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&auto=format',
     email: 'siti.rahayu@jogjakota.go.id',
     phone: '+62 274 515 100 ext. 202',
@@ -256,6 +259,7 @@ export const foreignRelationsPersonnel = [
     leadershipLabel: '',
     title: 'International Cooperation Analyst',
     country: 'Indonesia',
+    partnerCity: 'yogyakarta',
     photo: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=300&h=300&fit=crop&auto=format',
     email: 'eko.prasetyo@jogjakota.go.id',
     phone: '+62 274 515 100 ext. 203',
@@ -268,6 +272,7 @@ export const foreignRelationsPersonnel = [
     leadershipLabel: '',
     title: 'Protocol & Public Relations Staff',
     country: 'Indonesia',
+    partnerCity: 'yogyakarta',
     photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop&auto=format',
     email: 'anisa.putri@jogjakota.go.id',
     phone: '+62 274 515 100 ext. 204',
@@ -280,23 +285,119 @@ export const foreignRelationsPersonnel = [
     leadershipLabel: '',
     title: 'Cultural Diplomacy Consultant',
     country: 'Indonesia',
+    partnerCity: 'yogyakarta',
     photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&auto=format',
     email: 'agung.p@jogjakota.go.id',
     phone: '+62 274 515 100 ext. 205',
     bio: 'Serves as a cultural liaison and advisor for heritage-based international initiatives and public diplomacy programs.',
   },
+  {
+    id: 6,
+    name: 'Tanaka Hiroshi',
+    role: 'International Affairs Coordinator',
+    leadershipLabel: 'Kyoto City Hall',
+    title: 'Director of International Exchange',
+    country: 'Jepang',
+    partnerCity: 'kyoto',
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&auto=format',
+    email: 'tanaka.hiroshi@city.kyoto.jp',
+    phone: '+81 75 222 3110',
+    bio: 'Coordinates cultural heritage and education exchange programs between Kyoto and Yogyakarta.',
+  },
+  {
+    id: 7,
+    name: 'Nguyen Minh Anh',
+    role: 'International Cooperation Officer',
+    leadershipLabel: 'Hue City People\'s Committee',
+    title: 'International Cooperation Officer',
+    country: 'Vietnam',
+    partnerCity: 'hue',
+    photo: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=300&h=300&fit=crop&auto=format',
+    email: 'minh.anh@hue.gov.vn',
+    phone: '+84 234 382 2531',
+    bio: 'Facilitates heritage conservation and tourism collaboration between Hue and Yogyakarta.',
+  },
+  {
+    id: 8,
+    name: 'Kim Jae-won',
+    role: 'International Exchange Officer',
+    leadershipLabel: 'Gangbuk-gu Office',
+    title: 'International Exchange Officer',
+    country: 'Korea Selatan',
+    partnerCity: 'gangbuk-seoul',
+    photo: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=300&h=300&fit=crop&auto=format',
+    email: 'jaewon.kim@gangbuk.go.kr',
+    phone: '+82 2 901 6204',
+    bio: 'Supports youth, cultural, and creative economy exchange programs with Yogyakarta.',
+  },
+  {
+    id: 9,
+    name: 'Li Wei',
+    role: 'Foreign Affairs Coordinator',
+    leadershipLabel: 'Hefei Municipal Government',
+    title: 'Foreign Affairs Coordinator',
+    country: 'Tiongkok',
+    partnerCity: 'hefei',
+    photo: 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=300&h=300&fit=crop&auto=format',
+    email: 'li.wei@hefei.gov.cn',
+    phone: '+86 551 6353 8000',
+    bio: 'Coordinates economic, technology, and education partnerships between Hefei and Yogyakarta.',
+  },
+  {
+    id: 10,
+    name: 'Rajen Sital',
+    role: 'Cultural Cooperation Officer',
+    leadershipLabel: 'Commewijne District Government',
+    title: 'Cultural Cooperation Officer',
+    country: 'Suriname',
+    partnerCity: 'commewijne',
+    photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=300&h=300&fit=crop&auto=format',
+    email: 'rajen.sital@gov.sr',
+    phone: '+597 472 222',
+    bio: 'Coordinates cultural and agricultural exchange rooted in the shared Javanese heritage of Commewijne and Yogyakarta.',
+  },
+  {
+    id: 11,
+    name: 'Saskia Lie-A-Kwie',
+    role: 'City Cooperation Officer',
+    leadershipLabel: 'Paramaribo City Government',
+    title: 'City Cooperation Officer',
+    country: 'Suriname',
+    partnerCity: 'paramaribo',
+    photo: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=300&h=300&fit=crop&auto=format',
+    email: 'saskia.lie@paramaribo.sr',
+    phone: '+597 477 111',
+    bio: 'Facilitates urban governance, performing arts, and cultural exchange programs with Yogyakarta.',
+  },
+  {
+    id: 12,
+    name: 'Maya Haddad',
+    role: 'Heritage Cooperation Officer',
+    leadershipLabel: 'Baalbek Municipality',
+    title: 'Heritage Cooperation Officer',
+    country: 'Lebanon',
+    partnerCity: 'baalbek',
+    photo: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?w=300&h=300&fit=crop&auto=format',
+    email: 'maya.haddad@baalbek.gov.lb',
+    phone: '+961 8 370 100',
+    bio: 'Supports heritage preservation and sustainable tourism collaboration between Baalbek and Yogyakarta.',
+  },
+  {
+    id: 13,
+    name: 'Petra Nováková',
+    role: 'International Partnership Officer',
+    leadershipLabel: 'Town of Hluboká nad Vltavou',
+    title: 'International Partnership Officer',
+    country: 'Ceko',
+    partnerCity: 'hluboka-nad-vltavou',
+    photo: 'https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=300&h=300&fit=crop&auto=format',
+    email: 'petra.novakova@hluboka.cz',
+    phone: '+420 387 001 111',
+    bio: 'Coordinates tourism, youth exchange, arts, and small business collaboration with Yogyakarta.',
+  },
 ]
 
-export const galleryPhotos = [
-  { id: 1, cityId: 'kyoto', src: 'https://images.unsplash.com/photo-1571086811602-bb82a42c46ae?w=800&h=500&fit=crop&auto=format', alt: 'Workshop batik bersama delegasi Kyoto', caption: 'Workshop Batik Bersama Delegasi Kyoto' },
-  { id: 2, cityId: 'hue', src: 'https://images.unsplash.com/photo-1549921296-3b0f9a35af35?w=800&h=500&fit=crop&auto=format', alt: 'Pertunjukan budaya dalam program pertukaran Hue', caption: 'Pertukaran Pertunjukan Budaya Yogyakarta – Hue' },
-  { id: 3, cityId: 'gangbuk-seoul', src: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?w=800&h=500&fit=crop&auto=format', alt: 'Pertukaran pelajar Yogyakarta dan Gangbuk-gu', caption: 'Pertukaran Pelajar Yogyakarta – Gangbuk-gu, Seoul' },
-  { id: 4, cityId: 'hefei', src: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&h=500&fit=crop&auto=format', alt: 'Pertemuan kerja sama teknologi dengan Hefei', caption: 'Forum Inovasi dan Teknologi Yogyakarta – Hefei' },
-  { id: 5, cityId: 'commewijne', src: 'https://images.unsplash.com/photo-1529156069898-49953e39b3ac?w=800&h=500&fit=crop&auto=format', alt: 'Pertukaran budaya masyarakat Jawa Suriname', caption: 'Pertukaran Budaya Yogyakarta – Commewijne' },
-  { id: 6, cityId: 'paramaribo', src: 'https://images.unsplash.com/photo-1556761175-b413da4baf72?w=800&h=500&fit=crop&auto=format', alt: 'Pertemuan delegasi kerja sama Paramaribo', caption: 'Pertemuan Delegasi Yogyakarta – Paramaribo' },
-  { id: 7, cityId: 'baalbek', src: 'https://images.unsplash.com/photo-1531058020387-3be344556be6?w=800&h=500&fit=crop&auto=format', alt: 'Program pelestarian budaya bersama Baalbek', caption: 'Program Pelestarian Warisan Budaya Yogyakarta – Baalbek' },
-  { id: 8, cityId: 'hluboka-nad-vltavou', src: 'https://images.unsplash.com/photo-1540575467063-178a50c2df87?w=800&h=500&fit=crop&auto=format', alt: 'Forum pariwisata dan pemuda Hluboka', caption: 'Forum Pariwisata dan Pemuda Yogyakarta – Hluboká' },
-]
+export const galleryPhotos = []
 
 export const proposals = [
   {
@@ -358,7 +459,9 @@ export const proposals = [
   },
 ]
 
-export const adminUsers = [
+export type AdminUser = { id: number; name: string; email: string; role: 'admin' | 'foreign-rep' | 'editor' | 'viewer'; city: string; status: 'active' | 'pending'; lastLogin: string; photo?: string }
+
+export const adminUsers: AdminUser[] = [
   { id: 1, name: 'Drs. Bambang Wijayanto', email: 'bambang.w@jogjakota.go.id', role: 'admin' as const, city: 'Yogyakarta', status: 'active' as const, lastLogin: '25 Apr 2024' },
   { id: 2, name: 'Tanaka Hiroshi', email: 'tanaka.h@city.kyoto.jp', role: 'foreign-rep' as const, city: 'Kyoto', status: 'active' as const, lastLogin: '24 Apr 2024' },
   { id: 3, name: 'Emma Thompson', email: 'e.thompson@wcc.govt.nz', role: 'foreign-rep' as const, city: 'Wellington', status: 'active' as const, lastLogin: '20 Apr 2024' },
@@ -392,6 +495,7 @@ export const roles = [
       'View partner city profiles',
       'Access public galleries and articles',
       'Manage personal account details',
+      'Submit Partner Voice',
     ],
   },
   {
@@ -402,7 +506,6 @@ export const roles = [
       'Create and edit articles',
       'Upload and manage media files',
       'Add video embeds',
-      'View basic reporting',
     ],
   },
   {
@@ -430,10 +533,30 @@ export type ContentItem = {
   thumbnail?: string
 }
 
-export const contentItems: ContentItem[] = [
-  { id: 1, type: 'article' as const, title: 'Batik Jogja dan Kimono Kyoto: Merajut Cerita Lintas Samudera', city: 'Kyoto', author: 'Eko Prasetyo', date: '2024-03-15', status: 'published' as const, tags: ['Budaya', 'Seni'] },
-  { id: 2, type: 'article' as const, title: 'Leiden Serahkan Salinan Digital 200 Manuskrip Kuno Yogyakarta', city: 'Leiden', author: 'Anisa Putri Wulandari', date: '2024-02-10', status: 'published' as const, tags: ['Warisan', 'Arsip'] },
-  { id: 3, type: 'photo' as const, title: 'Dokumentasi Workshop Batik — Delegasi Kyoto 2023', city: 'Kyoto', author: 'Anisa Putri Wulandari', date: '2023-11-20', status: 'published' as const, tags: ['Foto', 'Workshop'] },
-  { id: 4, type: 'video' as const, title: 'Recap: Wayang Kulit di Gwangju Cultural Centre', city: 'Gwangju', author: 'Eko Prasetyo', date: '2024-01-08', status: 'draft' as const, tags: ['Video', 'Pertunjukan'] },
-  { id: 5, type: 'article' as const, title: 'Delegasi Pemuda Wellington Kunjungi Sanggar Tari Yogyakarta', city: 'Wellington', author: 'Eko Prasetyo', date: '2024-04-01', status: 'draft' as const, tags: ['Pemuda', 'Seni'] },
-]
+export type HomepageMessages = {
+  mayor: { quote: string; name: string; period: string }
+  voices: { id: number; city: string; flag: string; quote: string; name: string; role: string; photo?: string; photoPosition?: string }[]
+  stats: { num: string; label: string; sub: string; suffix?: string }[]
+}
+
+export type PendingHomepageVoice = HomepageMessages['voices'][number] & { submittedBy: number; status: 'pending' | 'rejected'; adminNote?: string }
+
+export const homepageMessages: HomepageMessages = {
+  mayor: {
+    quote: 'Yogyakarta is a city shaped by rich cultural heritage and a forward-looking spirit. Sister-city cooperation is more than diplomacy; it is a human bridge connecting communities, ideas, and hopes across borders.',
+    name: 'Mayor of Yogyakarta',
+    period: '2021–2026',
+  },
+  voices: [
+    { id: 1, city: 'Kyoto, Jepang', flag: '🇯🇵', quote: 'Yogyakarta and Kyoto share the soul of cities that refuse to let tradition disappear — our partnership is a mutual vow to keep culture alive for generations to come.', name: 'Mayor Koji Matsui', role: 'Walikota Kyoto' },
+    { id: 2, city: 'Leiden, Belanda', flag: '🇳🇱', quote: "The Javanese manuscripts in our university are not Dutch heritage — they are Yogyakarta's heritage that we are honored to return, page by page, to their rightful home.", name: 'Thierry Aartsen', role: 'Walikota Leiden' },
+    { id: 3, city: 'Gwangju, Korsel', flag: '🇰🇷', quote: 'Yogyakarta and Gwangju are kindred cities — both chose culture and humanity over silence when history demanded courage. That bond is unbreakable.', name: 'Kim Kwang-chung', role: 'Walikota Gwangju' },
+  ],
+  stats: [
+    { num: '8', label: 'Active Sister Cities', sub: 'across multiple regions' },
+    { num: '39', suffix: '+', label: 'Years of Partnership', sub: 'since 1985' },
+    { num: '200', suffix: '+', label: 'Joint Programs', sub: 'implemented' },
+  ],
+}
+
+export const contentItems: ContentItem[] = []

@@ -1,14 +1,17 @@
 import { useState } from 'react'
 import type { Page, AuthUser } from '../App'
+import { canAccessAdminDashboard, canAccessContent } from '../utils/permissions'
+import type { RoleLike } from '../utils/permissions'
 
 interface Props {
   page: Page
   auth: AuthUser
-  navigate: (p: Page, cityId?: string) => void
+  navigate: (p: Page, cityId?: string, articleId?: number) => void
   setAuth: (u: AuthUser) => void
+  roles?: RoleLike[]
 }
 
-export default function Navbar({ page, auth, navigate, setAuth }: Props) {
+export default function Navbar({ page, auth, navigate, setAuth, roles }: Props) {
   const [menuOpen, setMenuOpen] = useState(false)
 
   const handleLogout = () => {
@@ -59,6 +62,7 @@ export default function Navbar({ page, auth, navigate, setAuth }: Props) {
         </div>
 
         {/* Auth section */}
+        {/* Auth section */}
         <div className="hidden md:flex items-center gap-3">
           {auth ? (
             <>
@@ -68,13 +72,13 @@ export default function Navbar({ page, auth, navigate, setAuth }: Props) {
                 </div>
                 <span>{auth.name.split(' ')[0]}</span>
                 <span className="text-white/30">·</span>
-                <span className="text-xs" style={{ color: auth.role === 'admin' ? '#e0ac56' : 'rgba(255,255,255,0.5)' }}>
-                  {auth.role === 'admin' ? 'Admin' : auth.role === 'foreign-rep' ? 'Partner' : 'Editor'}
+                <span className="text-xs font-medium" style={{ color: auth.role === 'admin' ? '#e0ac56' : '#a7f3d0' }}>
+                  {roles?.find(r => r.name === auth.role)?.label || (auth.role === 'admin' ? 'Admin' : auth.role === 'foreign-rep' ? 'Partner' : 'Editor')}
                 </span>
               </div>
-              {auth.role === 'admin' && (
+              {canAccessAdminDashboard(auth, roles) && (
                 <button onClick={() => navigate('admin')} className="text-xs px-3 py-1.5 rounded-sm font-medium transition-colors" style={{ backgroundColor: page === 'admin' ? '#c9963a' : 'rgba(201,150,58,0.2)', color: '#e0ac56' }}>
-                  Admin Dashboard
+                  {auth.role === 'admin' ? 'Admin Dashboard' : 'Content Studio'}
                 </button>
               )}
               <button onClick={handleLogout} className="text-xs text-white/40 hover:text-white/70 transition-colors">Logout</button>
@@ -102,8 +106,10 @@ export default function Navbar({ page, auth, navigate, setAuth }: Props) {
           <div className="px-6 py-4 flex flex-col gap-4">
             <button onClick={() => { navigate('landing'); setMenuOpen(false) }} className="text-sm text-white/80 text-left">Home</button>
             <button onClick={() => { navigate('partner-city', 'kyoto'); setMenuOpen(false) }} className="text-sm text-white/80 text-left">Partner Cities</button>
-            {auth?.role === 'admin' && (
-              <button onClick={() => { navigate('admin'); setMenuOpen(false) }} className="text-sm text-left" style={{ color: '#e0ac56' }}>Admin Dashboard</button>
+            {canAccessAdminDashboard(auth, roles) && (
+              <button onClick={() => { navigate('admin'); setMenuOpen(false) }} className="text-sm text-left font-medium" style={{ color: '#e0ac56' }}>
+                {auth?.role === 'admin' ? 'Admin Dashboard' : 'Content Studio'}
+              </button>
             )}
             {auth ? (
               <button onClick={handleLogout} className="text-sm text-white/40 text-left">Logout</button>
